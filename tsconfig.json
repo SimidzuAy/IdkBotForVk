@@ -1,0 +1,37 @@
+{
+
+  "compilerOptions": {
+    "target": "es6",
+    "module": "CommonJS",
+    "importHelpers": true,
+    "strict": true,
+    "outDir": "build",
+    "noUnusedLocals": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "removeComments": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@command": [
+        "modules/Command"
+      ],
+      "@config": [
+        "config"
+      ],
+      "@utils": [
+        "utils"
+      ],
+      "@types": [
+        "types"
+      ],
+      "@modules/*": [
+        "modules/*"
+      ],
+      "@class/*": [
+        "classes/*"
+      ]
+    }
+  }
+}

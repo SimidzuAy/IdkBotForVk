@@ -1,0 +1,34 @@
+{
+  "0": [
+    "Пользователя нет в чате!",
+    "User not found in the chat"
+  ],
+  "1": [
+    "Вы не можете использовать данное действие на себе!",
+    "You cannot use this action on yourself"
+  ],
+  "2": [
+    "Ошибка при исключении пользователя",
+    "Error while excluding user"
+  ],
+  "3": [
+    "Данный пользователь не забанен",
+    "This user are not banned"
+  ],
+  "4": [
+    "Недостаточно прав для этого действия",
+    "Insufficient rights for this action"
+  ],
+  "5": [
+    "Не существует роли с таким уровнем прав",
+    "There is no role with this permission level"
+  ],
+  "6": [
+    "Пользователя нет или не было в данном чате",
+    "The user was not or was not in this chat"
+  ],
+  "7": [
+    "Вы не можете влиять на пользователя уровень которого выше или равняются вашему",
+    "You cannot influence a user whose level is higher or equal to your"
+  ]
+}
