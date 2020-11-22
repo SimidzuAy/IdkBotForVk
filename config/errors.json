@@ -1,41 +1,41 @@
 {
-  "0": [
+  "USER_NOT_FOUND": [
     "Пользователя нет в чате!",
     "User not found in the chat"
   ],
-  "1": [
+  "USE_AT_YOURSELF": [
     "Вы не можете использовать данное действие на себе!",
     "You cannot use this action on yourself"
   ],
-  "2": [
+  "IN_KICK_USER": [
     "Ошибка при исключении пользователя",
     "Error while excluding user"
   ],
-  "3": [
+  "USER_ARE_NOT_BANNED": [
     "Данный пользователь не забанен",
     "This user are not banned"
   ],
-  "4": [
+  "NOT_ENOUGH_RIGHTS": [
     "Недостаточно прав для этого действия",
     "Insufficient rights for this action"
   ],
-  "5": [
+  "ROLE_DOESNT_CREATED": [
     "Не существует роли с таким уровнем прав",
     "There is no role with this permission level"
   ],
-  "6": [
+  "USER_ARE_NOT_IN_THE_CHAT": [
     "Пользователя нет или не было в данном чате",
     "The user was not or was not in this chat"
   ],
-  "7": [
+  "USER_HAVE_BIGGER_RIGHT": [
     "Вы не можете влиять на пользователя уровень которого выше или равняются вашему",
     "You cannot influence a user whose level is higher or equal to your"
   ],
-  "8": [
+  "UNKNOWN_COMMAND": [
     "Неизвестная команда",
     "Unknown command"
   ],
-  "9": [
+  "TOO_BIG_SMALL_RIGHT_LEVEL": [
     "Указан слишком большой/мальнький уровень прав.\nДоступно: от -100 до 100",
     "Permission level is too high / low.\nAvailable: -100 to 100"
   ]

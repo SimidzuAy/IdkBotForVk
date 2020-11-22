@@ -15,6 +15,8 @@ export enum ERRORS {
     TOO_BIG_SMALL_RIGHT_LEVEL
 }
 
+export const getUserReg = "(?:\\[(\\S+?)\\|(?:.+?)]|(?:http(?:s|):\\/\\/|)vk\\.com\\/(.+))"
+
 export enum RIGHTS {
     USER,
     ADMIN,

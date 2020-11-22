@@ -1,7 +1,6 @@
 import Command from "@command"
-import {ERRORS, MContext, commands} from "@types"
+import {ERRORS, MContext, commands, getUserReg} from "@types"
 import {HearManager} from "@vk-io/hear"
-import cfg from '@config'
 import {getIdByMatch, getIdFromReply, isThisCommand, sendError, aliasesToCommand} from '@utils'
 
 
@@ -9,7 +8,7 @@ export default class extends Command {
     readonly hears: any[] = [
         (value: string, context: MContext) => {
             const regExps = [
-                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.ban.aliases)} ${cfg.getUserReg}`, "i"),
+                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.ban.aliases)} ${getUserReg}`, "i"),
                 new RegExp(`^${context.chat.getPrefix()}}\\s*${aliasesToCommand(commands.ban.aliases)}`, "i")
             ]
 

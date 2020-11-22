@@ -7,7 +7,6 @@ interface Config {
     rp: {
         [key: string]: string[]
     },
-    "getUserReg": string,
     db: {
         url: string
     },

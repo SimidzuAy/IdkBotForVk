@@ -53,7 +53,7 @@ export async function getIdFromReply(context: MContext) {
 
 export async function sendError(errorCode: ERRORS, peerId: number, lang: LANG, vk: VK) {
     await vk.api.messages.send({
-        message: `${cfg.errors[errorCode][lang]}\n${["Код ошибки: ", "Error code: "][lang]} ${errorCode} (${ERRORS[errorCode]})`,
+        message: `${cfg.errors[ERRORS[errorCode]][lang]}\n${["Код ошибки: ", "Error code: "][lang]} ${errorCode} (${ERRORS[errorCode]})`,
         random_id: 0,
         peer_id: peerId
     })
