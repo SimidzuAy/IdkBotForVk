@@ -3,6 +3,10 @@ import {ExtractDoc} from "ts-mongoose"
 import {MessagesConversationMember} from "vk-io/lib/api/schemas/objects"
 import {LANG} from "@types"
 
+
+type commands = 'ban' | 'unBan' | 'prefix' | 'createRole' | 'changeRoleRight'
+    | 'roleEmoji' | 'setRole' | 'getAdminList' | 'ping'
+
 export default class {
     private readonly peerId: number
     private chat!: ExtractDoc<typeof chatSchema>
@@ -75,7 +79,18 @@ export default class {
                     name: "Участник",
                     permission: 0,
                     emoji: ""
-                }]
+                }],
+                commands: {
+                    ban: { permission: 60 },
+                    unBan: { permission: 60 },
+                    prefix: { permission: 80 },
+                    createRole: { permission: 100 },
+                    changeRoleRight: {permission: 80},
+                    roleEmoji: {permission: 80},
+                    setRole: {permission: 80},
+                    getAdminList: {permission: 0},
+                    ping: {permission: 0}
+                }
 
             });
         }
@@ -186,5 +201,10 @@ export default class {
 
     getLang() {
         return this.chat.lang
+    }
+
+
+    getCommandPermission(command: commands): number {
+        return this.chat.commands[command].permission
     }
 }

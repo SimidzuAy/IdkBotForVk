@@ -1,48 +1,73 @@
 import {RIGHTS} from "@types"
-import cfg from "@config"
-import {userModel} from "../dataBase"
+import {userModel, Users} from "../dataBase"
+import {ExtractDoc} from "ts-mongoose"
 import {VK} from "vk-io"
+import {BaseSex} from "vk-io/lib/api/schemas/objects"
 
 export default class User {
     private vkId: number
     private right: RIGHTS[] = [RIGHTS.USER]
-    private FullName: string
-    public readonly sex: 0 | 1 | 2
+    private fullName: string = ""
+    // @ts-ignore
+    private user!: ExtractDoc<typeof Users>
+    private sex: BaseSex = 0
 
-    constructor(vkId: number, sex: 0 | 1 | 2, fullName: string) {
-        this.sex = sex
+
+    constructor(vkId: number) {
         this.vkId = vkId
-        this.FullName = fullName
-
-        if (cfg["force-admin"].includes(this.vkId)) {
-            this.right.push(RIGHTS.DEVELOPER)
-            this.right.push(RIGHTS.ADMIN)
-        }
 
     }
 
     async getUser(id?: number, vk?: VK) {
 
-        if (!id) {
+        if (id && vk) {
             const user = (await userModel.getByVkId(this.vkId))[0]
 
             if (user) {
+                this.user = user;
             } else {
+                const _user = (await vk?.api.users.get({
+                    user_ids: String(id),
+                    fields: ['sex']
+                }))[0]
+
+                const fullName = `${_user.first_name} ${_user.last_name}`
+
+                this.fullName = fullName
+                this.sex = _user.sex!
+
+                await userModel.create({
+                    fullName: fullName,
+                    vkId: id,
+                    right: [RIGHTS.USER]
+                })
             }
-        } else {
-            const user = (await userModel.getByVkId(id))[0]
+        } else if ( vk ) {
+            const user = (await userModel.getByVkId(this.vkId))[0]
 
             if (user) {
-                this.FullName = user.vkFullName
+                this.fullName = user.fullName
                 this.vkId = user.vkId
                 this.right = user.rights!
             } else {
 
-                const _user = (await vk?.api.users.get({
-                    user_ids: String(id)
-                }))![0]
+                const _user = (await vk.api.users.get({
+                    user_ids: String(this.vkId),
+                    fields: ["sex"]
+                }))[0]
 
-                this.FullName = `${_user.first_name} ${_user.last_name}`
+                const fullName = `${_user.first_name} ${_user.last_name}`
+
+                this.fullName = fullName
+                this.sex = _user.sex!
+
+
+                await userModel.create({
+                    fullName: fullName,
+                    sex: _user.sex,
+                    vkId: this.vkId,
+                    right: this.right
+                })
 
             }
 
@@ -67,9 +92,8 @@ export default class User {
         return array[this.sex].toLowerCase();
     }
 
-
-    get fullName() {
-        return this.FullName;
+    getFullName() {
+        return this.fullName
     }
 
 }

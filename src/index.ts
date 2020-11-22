@@ -21,16 +21,9 @@ async function getUser(context: MContext) {
     let user
 
     if (!users.has(String(context.senderId))) {
-        const userQuery = (await vk.api.users.get({
-            user_ids: context.senderId.toString(),
-            fields: ["sex"]
-        }))[0]
 
-        user = await new User(
-            context.senderId,
-            userQuery.sex!,
-            `${userQuery.first_name} ${userQuery.last_name}`)
-            .getUser();
+        user = await new User(context.senderId)
+            .getUser(0, vk);
 
         users.set(String(context.senderId), {
             user,
@@ -99,8 +92,13 @@ vk.updates.on(['chat_invite_user'], async (context: MContext) => {
 
     context.vk = vk
 
-    context.user = await getUser(context)
-    context.chat = await getChat(context)
+    const userAndChat = await Promise.all([
+        getUser(context),
+        getChat(context)
+    ])
+
+    context.user = userAndChat[0]
+    context.chat = userAndChat[1]
 
 
     if (context.chat.getBanned().find(x => x.bannedId === context.eventMemberId)) {

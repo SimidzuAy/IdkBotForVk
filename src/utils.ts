@@ -1,6 +1,6 @@
 import {VK} from "vk-io"
-import {ERRORS, LANG, MContext} from "@types"
-import cfg from '@config'
+import {ERRORS, LANG, MContext} from "./types"
+import cfg from './config'
 
 type NameCases = "nom" | "gen" | "dat" | "acc" | "ins" | "abl" | undefined
 
@@ -13,8 +13,7 @@ export async function getFullNameById(vk: VK, id: number, name_case: NameCases =
     return `${user.first_name} ${user.last_name}`
 }
 
-// @ts-ignore
-export async function getIdByMatch(vk: VK, match: Array<any>): number | null {
+export async function getIdByMatch(vk: VK, match: Array<any>) {
     let screenName: string;
 
     if (match[0]) {
@@ -74,4 +73,15 @@ export function isThisCommand(value: string, context: MContext, regExps: RegExp[
     }
 
     return false
+}
+
+
+export function aliasesToCommand(aliases: string[]): string {
+    let string = ''
+
+    aliases.forEach(alias => {
+        string += `${alias}|`
+    })
+
+    return `(?:${string.substring(0, string.length - 1)})`
 }

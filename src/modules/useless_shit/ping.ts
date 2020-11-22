@@ -1,13 +1,13 @@
 import Command from "@command"
-import {MContext} from "@types"
+import {commands, MContext} from "@types"
 import {HearManager} from "@vk-io/hear"
-import {isThisCommand} from "@utils"
+import {aliasesToCommand, isThisCommand} from "@utils"
 
 export default class extends Command {
     readonly hears: any[] = [
         (value: string, context: MContext) => {
             const regExps = [
-                new RegExp(`^${context.chat.getPrefix()}(ping|пинг)`, "i")
+                new RegExp(`^${context.chat.getPrefix()}${aliasesToCommand(commands.ping.aliases)}`, "i")
             ]
 
             return isThisCommand(value, context, regExps)
@@ -15,9 +15,12 @@ export default class extends Command {
     ]
 
     readonly handler = async (context: MContext) => {
-        const vkTime: number = await context.vk.api.utils.getServerTime({})
 
-        await context.send(`Ping: ${vkTime - context.createdAt} Seconds`)
+        if (context.chat.getCommandPermission('ping') > context.chat.userGetPermission(context.senderId))
+            return
+
+
+        await context.send(`Ping: ${ Math.round( Date.now() / 1000 )  - context.createdAt} Seconds`)
     }
 
     constructor(hearManager: HearManager<MContext>) {

@@ -1,8 +1,5 @@
 {
   "token": "",
-  "force-admin": [
-    553748914
-  ],
   "payload": "TsBot",
   "getUserReg": "(?:\\[(\\S+?)\\|(?:.+?)]|(?:http(?:s|):\\/\\/|)vk\\.com\\/(.+))"
 }

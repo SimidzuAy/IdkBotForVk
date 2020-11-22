@@ -2,7 +2,6 @@ import {HearManager} from "@vk-io/hear"
 import {MContext} from "@types"
 
 
-import test from '@modules/test'
 import ping from '@modules/useless_shit/ping'
 import role from '@modules/moderation/role/setRole'
 import roleEmoji from "@modules/moderation/role/roleEmoji"
@@ -12,10 +11,9 @@ import unBanUser from '@modules/moderation/bans/unban'
 import setPrefix from '@modules/moderation/editChatSettings/changePrefix'
 import createNewRight from "@modules/moderation/editChatSettings/createNewRight"
 import getAdminList from "@modules/moderation/getAdminList"
-
+import editCommandPermission from "@modules/moderation/editChatSettings/editCommandPermission"
 
 const commands = [
-    test,
     role,
     roleEmoji,
     ping,
@@ -24,6 +22,7 @@ const commands = [
     unBanUser,
     setPrefix,
     createNewRight,
+    editCommandPermission,
     rp
 ];
 

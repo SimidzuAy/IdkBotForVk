@@ -75,7 +75,7 @@ export default class extends Command {
                 return await sendError(ERRORS.USER_NOT_FOUND, context.peerId, context.chat.getLang(), context.vk)
 
             const names = [
-                `[id${context.senderId}|${context.user.fullName}]`,
+                `[id${context.senderId}|${context.user.getFullName()}]`,
                 `[id${id}|${await getFullNameById(context.vk, id, "gen")}]`];
 
             const string = context.$match[1][0].toUpperCase() + context.$match[1].substr(1).toLowerCase();

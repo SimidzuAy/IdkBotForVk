@@ -1,13 +1,13 @@
 import Command from "@command"
-import {MContext} from "@types"
+import {commands, MContext} from "@types"
 import {HearManager} from "@vk-io/hear"
-import {isThisCommand} from "@utils"
+import {aliasesToCommand, isThisCommand} from "@utils"
 
 export default class extends Command {
     readonly hears: any[] = [
         (value: string, context: MContext) => {
             const regExps = [
-                new RegExp(`^${context.chat.getPrefix()}\\s*(?:admins|админы)`, "i")
+                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.getAdminList.aliases)}`, "i")
             ]
 
             return isThisCommand(value, context, regExps)
@@ -15,6 +15,10 @@ export default class extends Command {
     ]
 
     readonly handler = async (context: MContext) => {
+
+        if (context.chat.getCommandPermission('getAdminList') > context.chat.userGetPermission(context.senderId))
+            return
+
         const users = context.chat.getAllUsers()
 
         const admins = users.filter(x => x.permission >= 1 && x.userId > 0)
@@ -40,7 +44,7 @@ export default class extends Command {
                 if (right.permission === context.chat.getUser(admin.userId)!.permission) {
                     const user = await context.user.getUser(admin.userId, context.vk);
 
-                    msg += `\n[id${admin.userId}|${user.fullName}] ${context.chat.getUser(admin.userId)!.inChat ? "" : "🚪"}`
+                    msg += `\n[id${admin.userId}|${user.getFullName()}] ${context.chat.getUser(admin.userId)!.inChat ? "" : "🚪"}`
                 }
             }
         }

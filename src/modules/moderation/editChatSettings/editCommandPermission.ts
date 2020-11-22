@@ -1,21 +1,21 @@
 import Command from "@command"
-import {MContext} from "@types"
+import {commands, MContext} from "@types"
+import {aliasesToCommand, isThisCommand} from "@utils"
 import {HearManager} from "@vk-io/hear"
-import {isThisCommand} from "@utils"
 
 export default class extends Command {
     readonly hears: any[] = [
         (value: string, context: MContext) => {
             const regExps = [
-                new RegExp(`^${context.chat.getPrefix()}\\s*test`, "i")
+                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.changeRoleRight.aliases)} (\w+) (\d{1,3})`, "i")
             ]
 
             return isThisCommand(value, context, regExps)
         }
-    ]
+    ];
 
     readonly handler = async (context: MContext) => {
-        await context.reply(String(context.senderId))
+
     }
 
     constructor(hearManager: HearManager<MContext>) {

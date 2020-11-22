@@ -1,6 +1,6 @@
-import {isThisCommand, sendError} from "@utils"
+import {aliasesToCommand, isThisCommand, sendError} from "@utils"
 import Command from "@command"
-import {ERRORS, MContext} from "@types"
+import {commands, ERRORS, MContext} from "@types"
 import {HearManager} from "@vk-io/hear"
 
 const emojiReg = new RegExp("[\\u{1f300}-\\u{1f5ff}\\u{1f900}-\\u{1f9ff}\\u{1f600}-\\u{1f64f}\\u{1f680}-\\u{1f6ff}\\u{2600}-" +
@@ -13,7 +13,7 @@ export default class extends Command {
     readonly hears: any[] = [
         (value: string, context: MContext) => {
             const regExps = [
-                new RegExp(`^${context.chat.getPrefix()}\\s*(?:emoji|эмоджи) (\\d{1,3}) (.+)`, "i")
+                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.roleEmoji.aliases)} (\\d{1,3}) (.+)`, "i")
             ]
 
             return isThisCommand(value, context, regExps)
@@ -21,6 +21,9 @@ export default class extends Command {
     ];
 
     readonly handler = async (context: MContext) => {
+
+        if (context.chat.getCommandPermission('roleEmoji') > context.chat.userGetPermission(context.senderId))
+            return
 
         if (!emojiReg.test(context.$match[2]))
             return await context.send("Я хуй знает что тут написать, неверное emoji")

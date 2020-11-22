@@ -2,6 +2,14 @@ import mongoose from "mongoose"
 import {createSchema, ExtractDoc, Type, typedModel} from "ts-mongoose"
 import {LANG, RIGHTS} from "@types"
 
+const command = Type.object({ required: true}).of({
+    permission: Type.number({
+        max: 100,
+        min: -100,
+        required: true
+    })
+})
+
 export const Users = createSchema({
     vkId: Type.number({
         required: true,
@@ -12,7 +20,8 @@ export const Users = createSchema({
         enum: [0, 1, 2],
         required: false
     })),
-    vkFullName: Type.string({required: true})
+    fullName: Type.string({required: true}),
+    sex: Type.number()
 
 });
 
@@ -56,6 +65,19 @@ export const chatSchema = createSchema({
         name: Type.string({required: true}),
         permission: Type.number({required: true, max: 100, min: -100}),
         emoji: Type.string({required: false, default: ""})
+    }),
+    commands: Type.object({
+        required: true
+    }).of({
+        ban: command,
+        unBan: command,
+        prefix: command,
+        createRole: command,
+        changeRoleRight: command,
+        roleEmoji: command,
+        setRole: command,
+        getAdminList: command,
+        ping: command
     })
 });
 

@@ -1,13 +1,13 @@
 import Command from "@command"
-import {MContext} from "@types"
+import {commands, MContext} from "@types"
 import {HearManager} from "@vk-io/hear"
-import {isThisCommand} from "@utils"
+import {aliasesToCommand, isThisCommand} from "@utils"
 
 export default class extends Command {
     readonly hears: any[] = [
         (value: string, context: MContext) => {
             const regExps = [
-                new RegExp(`^${context.chat.getPrefix()}\\s*(?:prefix|префикс) (.+)`, "i")
+                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.prefix.aliases)} (.+)`, "i")
             ]
 
             return isThisCommand(value, context, regExps)
@@ -15,6 +15,9 @@ export default class extends Command {
     ];
 
     readonly handler = async (context: MContext) => {
+
+        if (context.chat.getCommandPermission('prefix') > context.chat.userGetPermission(context.senderId))
+            return
 
         if (context.$match[1].length > 1) {
             return await context.send("Длинна префикса не может превышать один символ")
