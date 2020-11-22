@@ -4,6 +4,7 @@ import {MessagesConversationMember} from "vk-io/lib/api/schemas/objects"
 import {LANG} from "@types"
 
 
+
 type commands = 'ban' | 'unBan' | 'prefix' | 'createRole' | 'changeRoleRight'
     | 'roleEmoji' | 'setRole' | 'getAdminList' | 'ping'
 
@@ -206,5 +207,13 @@ export default class {
 
     getCommandPermission(command: commands): number {
         return this.chat.commands[command].permission
+    }
+
+    chatSetCommandPermission(command: commands, permission: number) {
+        this.chat.commands[command].permission = permission
+
+        this.chat.markModified('commands')
+
+        this.chat.save().then(console.log)
     }
 }

@@ -30,5 +30,13 @@
   "7": [
     "Вы не можете влиять на пользователя уровень которого выше или равняются вашему",
     "You cannot influence a user whose level is higher or equal to your"
+  ],
+  "8": [
+    "Неизвестная команда",
+    "Unknown command"
+  ],
+  "9": [
+    "Указан слишком большой/мальнький уровень прав.\nДоступно: от -100 до 100",
+    "Permission level is too high / low.\nAvailable: -100 to 100"
   ]
 }
