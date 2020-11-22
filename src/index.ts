@@ -66,13 +66,36 @@ const hearManager = new HearManager<MContext>()
 
 vk.updates.on(['message_new'], async (context: MContext, next: Function) => {
 
-    if (!context.senderId || !context.peerId) return
+    if (!context.senderId || !context.peerId || context.senderId < 0 || !context.chatId) return
 
     context.vk = vk
-    context.user = await getUser(context)
-    context.chat = await getChat(context)
+
+    const userAndChat = await Promise.all([
+        getUser(context),
+        getChat(context)
+    ])
+
+    context.user = userAndChat[0]
+    context.chat = userAndChat[1]
+
+    if (context.chat.getBanned().find(x => x.bannedId === context.senderId)) {
+
+        const methods: [Promise<MessageContext>, Promise<number>] = [
+            context.send("Данный пользователь находится в бане!"),
+            vk.api.messages.removeChatUser({
+                chat_id: context.chatId,
+                member_id: context.senderId
+            })
+        ];
+
+        return await Promise.all(methods)
+    }
+
+    if ( !context.chat.getAllUsers().find(x => x.userId === context.senderId)!.inChat )
+        context.chat.newChatUser(context.senderId)
 
     await next()
+
 });
 
 vk.updates.on(['message_new'], async (context: MContext, next: Function) => {
@@ -92,14 +115,7 @@ vk.updates.on(['chat_invite_user'], async (context: MContext) => {
 
     context.vk = vk
 
-    const userAndChat = await Promise.all([
-        getUser(context),
-        getChat(context)
-    ])
-
-    context.user = userAndChat[0]
-    context.chat = userAndChat[1]
-
+    context.chat = await getChat(context)
 
     if (context.chat.getBanned().find(x => x.bannedId === context.eventMemberId)) {
 
@@ -120,14 +136,13 @@ vk.updates.on(['chat_invite_user'], async (context: MContext) => {
 });
 
 vk.updates.on(["chat_kick_user"], async (context: MContext) => {
+
     if (!context.chatId) return
 
-    context.vk = vk
-
-    context.user = await getUser(context)
-    context.chat = await getChat(context)
     if (context.eventMemberId)
         context.chat.removeChatUser(context.eventMemberId)
+    else
+        console.log("why")
 })
 
 loadCommands(hearManager);

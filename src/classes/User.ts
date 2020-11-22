@@ -49,6 +49,8 @@ export default class User {
                 this.fullName = user.fullName
                 this.vkId = user.vkId
                 this.right = user.rights!
+                // @ts-ignore
+                this.sex = user.sex!
             } else {
 
                 const _user = (await vk.api.users.get({
@@ -94,6 +96,10 @@ export default class User {
 
     getFullName() {
         return this.fullName
+    }
+
+    save() {
+        this.user.save()
     }
 
 }

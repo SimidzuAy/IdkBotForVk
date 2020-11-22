@@ -57,6 +57,7 @@ export default class extends Command {
             return await sendError(ERRORS.ROLE_DOESNT_CREATED, context.peerId, context.chat.getLang(), context.vk)
 
         context.chat.userSetPermission(id, permission)
+        context.chat.save()
 
         await context.send(["Уровень прав успешно изменён!", "Permission level successfully changed!"][context.chat.getLang()])
 

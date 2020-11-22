@@ -47,6 +47,7 @@ export default class extends Command {
 
         // @ts-ignore
         context.chat.chatSetCommandPermission(commandInDb, rightLevel)
+        context.chat.save()
     }
 
     constructor(hearManager: HearManager<MContext>) {

@@ -35,6 +35,7 @@ export default class extends Command {
             return await sendError(ERRORS.ROLE_DOESNT_CREATED, context.peerId, context.chat.getLang(), context.vk)
 
         context.chat.roleSetEmoji(Number(context.$match[1]), emoji)
+        context.chat.save()
         await context.send([
             `Emoji роли с названием ${right.name} успешно измененно!`,
             `Emoji role with name ${right.name} has been changed`

@@ -31,6 +31,7 @@ export default class extends Command {
             if (id) {
                 if (context.chat.getBanned().find(x => x.bannedId === id)) {
                     context.chat.unBan(id)
+                    context.chat.save()
                     await context.send(`Пользователь @id${id} успешно разбанен!`)
                 } else
                     return await sendError(ERRORS.USER_ARE_NOT_BANNED, context.peerId, context.chat.getLang(), context.vk)

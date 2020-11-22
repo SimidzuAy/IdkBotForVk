@@ -123,8 +123,6 @@ export default class {
 
     roleSetEmoji(permission: number, emoji: string) {
         this.chat.rights!.find(x => x.permission === permission)!.emoji = emoji;
-
-        this.chat.save();
     }
 
 
@@ -140,8 +138,6 @@ export default class {
 
         else
             this.chat.users![userIndex].inChat = true;
-
-        this.chat.save();
     }
 
     removeChatUser(userId: number) {
@@ -150,8 +146,6 @@ export default class {
 
         if (userIndex > -1)
             this.chat.users![userIndex].inChat = false;
-
-        this.chat.save();
     }
 
     chatGetRights() {
@@ -164,21 +158,15 @@ export default class {
             byId: who,
             from: Date.now(),
             to: to
-        });
-
-        this.chat.save();
+        })
     }
 
     unBan(userId: number) {
         this.chat.bans = this.chat.bans!.filter(x => x.bannedId !== userId);
-
-        this.chat.save()
     }
 
     setPrefix(prefix: string) {
         this.chat.prefix = prefix;
-
-        this.chat.save();
     }
 
 
@@ -192,8 +180,6 @@ export default class {
             permission,
             emoji: ""
         });
-
-        this.chat.save()
     }
 
     getBanned() {
@@ -213,7 +199,10 @@ export default class {
         this.chat.commands[command].permission = permission
 
         this.chat.markModified('commands')
+    }
 
-        this.chat.save().then(console.log)
+
+    save() {
+        this.chat.save()
     }
 }

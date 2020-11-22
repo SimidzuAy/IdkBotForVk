@@ -36,6 +36,8 @@ export default class extends Command {
                 })
 
                 context.chat.ban(id, context.senderId)
+                context.chat.removeChatUser(id)
+                context.chat.save()
             } else {
                 await context.send("Кого банить то блять")
             }

@@ -36,14 +36,16 @@ export const commands = {
     ban: {
         aliases: [
             'бан',
-            'ban'
+            'ban',
+            'заблокировать'
         ]
     },
     unBan: {
         aliases: [
             'разбан',
             'анбан',
-            'unban'
+            'unban',
+            'разблокировать'
         ]
     },
     prefix: {

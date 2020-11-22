@@ -24,6 +24,7 @@ export default class extends Command {
         }
 
         context.chat.setPrefix(context.$match[1])
+        context.chat.save()
         await context.send(`Префикс успешно изменён на ${context.$match[1]}`)
     }
 

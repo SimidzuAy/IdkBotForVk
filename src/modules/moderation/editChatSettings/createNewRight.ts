@@ -24,14 +24,12 @@ export default class extends Command {
             if (num >= -100 && num <= 99) {
                 if (context.chat.userHasPermission(context.senderId, 90)) {
                     context.chat.crateRight(num, context.$match[1])
+                    context.chat.save()
                     await context.send("Ну создал и чё.")
                 } else
                     return await sendError(ERRORS.NOT_ENOUGH_RIGHTS, context.peerId, context.chat.getLang(), context.vk)
             } else {
-                await context.send([
-                    "Уровень прав может быть от -100 до 99",
-                    "Right level permission can be from -100 to 99"
-                ][context.chat.getLang()])
+                await sendError(ERRORS.TOO_BIG_SMALL_RIGHT_LEVEL, context.peerId, context.chat.getLang(), context.vk)
             }
 
     }
