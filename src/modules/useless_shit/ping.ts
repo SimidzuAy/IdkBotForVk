@@ -4,6 +4,9 @@ import {HearManager} from "@vk-io/hear"
 import {aliasesToCommand, isThisCommand} from "@utils"
 
 export default class extends Command {
+
+    readonly PATH: string = __filename
+
     readonly hears: any[] = [
         (value: string, context: MContext) => {
             const regExps = [
@@ -19,6 +22,7 @@ export default class extends Command {
         if (context.chat.getCommandPermission('ping') > context.chat.userGetPermission(context.senderId))
             return
 
+        throw new Error("А я ебу что-ли")
 
         await context.send(`Ping: ${ Math.round( Date.now() / 1000 )  - context.createdAt} Seconds`)
     }
@@ -30,3 +34,5 @@ export default class extends Command {
     }
 
 }
+
+export const PATH = __filename

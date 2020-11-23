@@ -5,6 +5,9 @@ import {getIdByMatch, getIdFromReply, isThisCommand, sendError, aliasesToCommand
 
 
 export default class extends Command {
+
+    readonly PATH: string = __filename
+
     readonly hears: any[] = [
         (value: string, context: MContext) => {
             const regExps = [

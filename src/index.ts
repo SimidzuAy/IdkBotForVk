@@ -7,15 +7,18 @@ import cfg from '@config'
 import {MContext} from "@types"
 import {DB} from "./dataBase"
 import Chat from "@class/Chat"
+import Logger from "@class/Logger"
 
 const vk: VK = new VK({
     token: cfg.token,
     language: "ru"
 })
 
+const logger = new Logger()
+
 const users = new Map()
 const chats = new Map()
-new DB(cfg.db.url)
+new DB(cfg.db.url, logger)
 
 async function getUser(context: MContext) {
     let user
@@ -104,7 +107,7 @@ vk.updates.on(['message_new'], async (context: MContext, next: Function) => {
         await hearManager.middleware(context, next)
     } catch (error) {
         await context.reply("Произошла ошибка: " + error.message)
-        throw error
+        logger.error(error.message)
     }
 })
 
@@ -145,7 +148,7 @@ vk.updates.on(["chat_kick_user"], async (context: MContext) => {
         console.log("why")
 })
 
-loadCommands(hearManager);
+loadCommands(hearManager, logger);
 
 hearManager.onFallback(async (context) => {
     if (!context.isChat)
@@ -169,4 +172,4 @@ setInterval(() => {
 }, 1000 * 60 * 15);
 
 
-vk.updates.start().catch(console.error).then(() => console.log("started"));
+vk.updates.start().catch(console.error).then(() => logger.info("Бот запущен"));

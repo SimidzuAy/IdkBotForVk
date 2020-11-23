@@ -4,6 +4,9 @@ import {aliasesToCommand, isThisCommand, sendError} from "@utils"
 import {HearManager} from "@vk-io/hear"
 
 export default class extends Command {
+
+    readonly PATH: string = __filename
+
     readonly hears: any[] = [
         (value: string, context: MContext) => {
             const regExps = [

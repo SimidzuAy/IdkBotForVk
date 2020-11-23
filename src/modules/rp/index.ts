@@ -6,6 +6,9 @@ import {Keyboard} from "vk-io"
 import {getFullNameById, getIdByMatch, getIdFromReply, isThisCommand, sendError} from '@utils'
 
 export default class extends Command {
+
+    readonly PATH: string = __filename
+
     readonly hears: any[] = [
         (value: string, context: MContext) => {
             const regExps = [

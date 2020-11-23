@@ -1,5 +1,6 @@
 import {HearManager} from "@vk-io/hear"
 import {MContext} from "@types"
+import Logger from "@class/Logger"
 
 
 import ping from '@modules/useless_shit/ping'
@@ -26,9 +27,13 @@ const commands = [
     rp
 ];
 
-function load(hearManager: HearManager<MContext>) {
+function load(hearManager: HearManager<MContext>, logger: Logger) {
     commands.forEach(command => {
-        new command(hearManager)
+        const path = new command(hearManager).PATH
+            .replace(`${__dirname}`, "")
+            .replace(/\\/g, "/")
+
+        logger.module(path)
     })
 }
 

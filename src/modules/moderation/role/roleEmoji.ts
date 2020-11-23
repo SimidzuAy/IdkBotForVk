@@ -10,6 +10,9 @@ const emojiReg = new RegExp("[\\u{1f300}-\\u{1f5ff}\\u{1f900}-\\u{1f9ff}\\u{1f60
     "\\u{23f8}-\\u{23fa}]", "ui")
 
 export default class extends Command {
+
+    readonly PATH: string = __filename
+
     readonly hears: any[] = [
         (value: string, context: MContext) => {
             const regExps = [

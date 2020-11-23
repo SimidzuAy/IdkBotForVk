@@ -1,6 +1,7 @@
 import mongoose from "mongoose"
 import {createSchema, ExtractDoc, Type, typedModel} from "ts-mongoose"
 import {LANG, RIGHTS} from "@types"
+import Logger from "@class/Logger"
 
 const command = Type.object({ required: true}).of({
     permission: Type.number({
@@ -98,7 +99,7 @@ export class DB {
     public readonly chat: ExtractDoc<typeof chatSchema>;
 
 
-    constructor(url: string) {
+    constructor(url: string, logger: Logger) {
         this.url = url;
 
 
@@ -107,15 +108,17 @@ export class DB {
             useUnifiedTopology: true,
             useFindAndModify: true,
             useCreateIndex: true
-        }).then();
+        }).then().catch(err => {
+            logger.error(`Ошибка при подключении к базе данных: ${err.message}`, "@dataBase/index")
+        });
 
         this.db = mongoose.connection;
 
         this.db.once('open', () => {
-            console.log("Connected to db!")
+            logger.info("Успешное подключение к БД")
         });
         this.db.on("error", err => {
-            console.log("Error on connection", err)
+            logger.error(`Ошибка в базе данных: ${err.message}`, "@dataBase/index")
         });
 
         this.user = new userModel();
