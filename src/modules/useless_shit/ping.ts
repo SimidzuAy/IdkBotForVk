@@ -22,8 +22,6 @@ export default class extends Command {
         if (context.chat.getCommandPermission('ping') > context.chat.userGetPermission(context.senderId))
             return
 
-        throw new Error("А я ебу что-ли")
-
         await context.send(`Ping: ${ Math.round( Date.now() / 1000 )  - context.createdAt} Seconds`)
     }
 
