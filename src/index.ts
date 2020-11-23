@@ -68,7 +68,6 @@ const hearManager = new HearManager<MContext>()
 
 
 vk.updates.on(['message_new'], async (context: MContext, next: Function) => {
-
     if (!context.senderId || !context.peerId || context.senderId < 0 || !context.chatId) return
 
     context.vk = vk
@@ -108,6 +107,7 @@ vk.updates.on(['message_new'], async (context: MContext, next: Function) => {
     } catch (error) {
         await context.reply("Произошла ошибка: " + error.message)
         logger.error(error.message)
+        throw error
     }
 })
 

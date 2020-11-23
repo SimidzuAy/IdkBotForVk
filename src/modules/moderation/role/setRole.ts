@@ -16,7 +16,7 @@ export default class extends Command {
                 new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.myRole.aliases)}`, "i")
             ]
 
-            return isThisCommand(value, context, regExps)
+            return  isThisCommand(value, context, regExps)
         }
     ];
 

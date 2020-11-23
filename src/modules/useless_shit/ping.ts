@@ -13,7 +13,14 @@ export default class extends Command {
                 new RegExp(`^${context.chat.getPrefix()}${aliasesToCommand(commands.ping.aliases)}`, "i")
             ]
 
-            return isThisCommand(value, context, regExps)
+            const isThis: boolean = isThisCommand(value, context, regExps)
+
+            if ( !isThis ) {
+                new RegExp(`${context.chat.getPrefix()}`)
+            }
+
+            return isThis
+
         }
     ]
 

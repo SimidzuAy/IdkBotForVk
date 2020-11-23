@@ -1,7 +1,7 @@
 import Command from "@command"
 import {commands, MContext} from "@types"
 import {HearManager} from "@vk-io/hear"
-import {aliasesToCommand, isThisCommand} from "@utils"
+import {aliasesToCommand, isThisCommand, sendCommandUsage} from "@utils"
 
 export default class extends Command {
 
@@ -13,7 +13,14 @@ export default class extends Command {
                 new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.prefix.aliases)} (.+)`, "i")
             ]
 
-            return isThisCommand(value, context, regExps)
+            const ans = isThisCommand(value, context, regExps)
+
+            if ( !ans ) {
+                if (new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.prefix.aliases)}`).test(value)) {
+                    sendCommandUsage("prefix", context.peerId, context.chat.getLang(), context.vk)
+                }
+            }
+            return ans
         }
     ];
 

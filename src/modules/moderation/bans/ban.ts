@@ -1,7 +1,7 @@
 import Command from "@command"
 import {ERRORS, MContext, commands, getUserReg} from "@types"
 import {HearManager} from "@vk-io/hear"
-import {getIdByMatch, getIdFromReply, isThisCommand, sendError, aliasesToCommand} from '@utils'
+import {getIdByMatch, getIdFromReply, isThisCommand, sendError, aliasesToCommand, sendCommandUsage} from '@utils'
 
 
 export default class extends Command {
@@ -12,7 +12,7 @@ export default class extends Command {
         (value: string, context: MContext) => {
             const regExps = [
                 new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.ban.aliases)} ${getUserReg}`, "i"),
-                new RegExp(`^${context.chat.getPrefix()}}\\s*${aliasesToCommand(commands.ban.aliases)}`, "i")
+                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.ban.aliases)}`, "i")
             ]
 
             return isThisCommand(value, context, regExps)
@@ -22,7 +22,7 @@ export default class extends Command {
     readonly handler = async (context: MContext) => {
 
         if (context.chat.getCommandPermission('ban') > context.chat.userGetPermission(context.senderId))
-            return
+            return await sendError(ERRORS.NOT_ENOUGH_RIGHTS, context.peerId, context.chat.getLang(), context.vk)
 
         try {
             const id: number | null = await getIdByMatch(context.vk, [context.$match[1], context.$match[2]]) ||
@@ -41,7 +41,7 @@ export default class extends Command {
                 context.chat.removeChatUser(id)
                 context.chat.save()
             } else {
-                await context.send("Кого банить то блять")
+                sendCommandUsage("ban", context.peerId, context.chat.getLang(), context.vk)
             }
 
         } catch (err) {

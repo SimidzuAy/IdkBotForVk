@@ -1,5 +1,5 @@
 import {VK} from "vk-io"
-import {ERRORS, LANG, MContext} from "./types"
+import {ERRORS, LANG, MContext, commands, commandsName} from "./types"
 import cfg from './config'
 
 type NameCases = "nom" | "gen" | "dat" | "acc" | "ins" | "abl" | undefined
@@ -84,4 +84,25 @@ export function aliasesToCommand(aliases: string[]): string {
     })
 
     return `(?:${string.substring(0, string.length - 1)})`
+}
+
+export function sendCommandUsage(command: commandsName, peerId: number, lang: LANG, vk: VK) {
+
+    let usages: string = ''
+
+    if ( commands[command].usages ) {
+        commands[command].usages[lang].forEach(usage => {
+            usages += `${usage}\n`
+        })
+    }
+
+    vk.api.messages.send({
+        random_id: 0,
+        peer_id: peerId,
+        message: [
+            `Использование комманды ${command}:\n${usages}`,
+            `Usage of the command: ${command}:\n${usages}`
+        ][lang]
+    }).then()
+
 }

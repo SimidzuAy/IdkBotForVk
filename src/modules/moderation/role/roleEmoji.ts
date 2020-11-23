@@ -1,4 +1,4 @@
-import {aliasesToCommand, isThisCommand, sendError} from "@utils"
+import {aliasesToCommand, isThisCommand, sendCommandUsage, sendError} from "@utils"
 import Command from "@command"
 import {commands, ERRORS, MContext} from "@types"
 import {HearManager} from "@vk-io/hear"
@@ -19,7 +19,14 @@ export default class extends Command {
                 new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.roleEmoji.aliases)} (\\d{1,3}) (.+)`, "i")
             ]
 
-            return isThisCommand(value, context, regExps)
+            const ans = isThisCommand(value, context, regExps)
+
+            if ( !ans ) {
+                if (new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.roleEmoji.aliases)}`).test(value)) {
+                    sendCommandUsage("roleEmoji", context.peerId, context.chat.getLang(), context.vk)
+                }
+            }
+            return ans
         }
     ];
 

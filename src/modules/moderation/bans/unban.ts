@@ -1,7 +1,7 @@
 import Command from "@command"
 import {commands, ERRORS, MContext, getUserReg} from "@types"
 import {HearManager} from "@vk-io/hear"
-import {getIdByMatch, getIdFromReply, isThisCommand, sendError, aliasesToCommand} from "@utils"
+import {getIdByMatch, getIdFromReply, isThisCommand, sendError, aliasesToCommand, sendCommandUsage} from "@utils"
 
 export default class extends Command {
 
@@ -37,7 +37,8 @@ export default class extends Command {
                     await context.send(`Пользователь @id${id} успешно разбанен!`)
                 } else
                     return await sendError(ERRORS.USER_ARE_NOT_BANNED, context.peerId, context.chat.getLang(), context.vk)
-
+            } else {
+                sendCommandUsage("unBan", context.peerId, context.chat.getLang(), context.vk)
             }
 
     }

@@ -34,13 +34,26 @@ export interface MContext extends MessageContext {
     vk: VK
 }
 
+export type commandsName = 'ban' | 'unBan' | 'prefix' | 'createRole' | 'changeRoleRight'
+    | 'roleEmoji' | 'setRole' | 'getAdminList' | 'ping'
+
 export const commands = {
     ban: {
         aliases: [
             'бан',
             'ban',
             'заблокировать'
-        ]
+        ],
+        usages: [[
+            "!ban @user",
+            "!ban vk.com/user",
+            "!ban - с ответом"
+        ], [
+            "!ban @user",
+            "!ban vk.com/user",
+            "!ban - with reply"
+        ]]
+
     },
     unBan: {
         aliases: [
@@ -48,39 +61,75 @@ export const commands = {
             'анбан',
             'unban',
             'разблокировать'
-        ]
+        ],
+        usages: [[
+            "!unban @user",
+            "!unban vk.com/user",
+            "!unban - с ответом"
+        ], [
+            "!unban @user",
+            "!unban vk.com/user",
+            "!unban - with reply"
+        ]]
     },
     prefix: {
         aliases: [
             'prefix',
             'префикс'
-        ]
+        ],
+        usages: [[
+            '!префикс *символ*'
+        ], [
+            "!prefix *symbol*"
+        ]]
     },
     createRole: {
         aliases: [
             'создать роль',
             'create role'
-        ]
+        ],
+        usages: [[
+            "!создать роль *название* *уровень прав*"
+        ], [
+            "!create role *name* *right level*"
+        ]]
     },
     changeRoleRight: {
         aliases: [
             'right',
             'permission',
             'право'
-        ]
+        ],
+        usages: [[
+            "!право *команда* *уровень прав*"
+        ], [
+            "!right *command* *right level*"
+        ]]
     },
     roleEmoji: {
         aliases: [
             'emoji',
             'емоджи',
             'эмоджи'
-        ]
+        ],
+        usages: [[
+            "!емоджи *уровень прав* *эмоджи*"
+        ], [
+            "!emoji *right level* *emoji*"
+        ]]
     },
     setRole: {
         aliases: [
             'роль',
             'role'
-        ]
+        ],
+        usages: [[
+            "!роль @user *уровень прав*",
+            "!роль *уровень прав* - на ответ",
+        ], [
+            "!role @user *right level*",
+            "!role *right level* - on answer"
+        ]]
     },
     myRole: {
         aliases: [
@@ -88,7 +137,8 @@ export const commands = {
             'моя\\s*роль',
             'role',
             'my\\s*role'
-        ]
+        ],
+        usages: [["!роль"], ["!role"]]
     },
     getAdminList: {
         aliases: [
@@ -96,13 +146,15 @@ export const commands = {
             'администраторы',
             'управляющие',
             'admins'
-        ]
+        ],
+        usages: [["!админы"], ["!admins"]]
     },
     ping: {
         aliases: [
             'ping',
             'пинг'
-        ]
+        ],
+        usages: [["!пинг"], ["!ping"]]
     }
 
 }

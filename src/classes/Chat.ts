@@ -1,12 +1,7 @@
 import {chatModel, chatSchema} from "../dataBase"
 import {ExtractDoc} from "ts-mongoose"
 import {MessagesConversationMember} from "vk-io/lib/api/schemas/objects"
-import {LANG} from "@types"
-
-
-
-type commands = 'ban' | 'unBan' | 'prefix' | 'createRole' | 'changeRoleRight'
-    | 'roleEmoji' | 'setRole' | 'getAdminList' | 'ping'
+import {LANG, commandsName} from "@types"
 
 export default class {
     private readonly peerId: number
@@ -191,11 +186,11 @@ export default class {
     }
 
 
-    getCommandPermission(command: commands): number {
+    getCommandPermission(command: commandsName): number {
         return this.chat.commands[command].permission
     }
 
-    chatSetCommandPermission(command: commands, permission: number) {
+    chatSetCommandPermission(command: commandsName, permission: number) {
         this.chat.commands[command].permission = permission
 
         this.chat.markModified('commands')
