@@ -1,7 +1,7 @@
-import mongoose from "mongoose"
-import {createSchema, ExtractDoc, Type, typedModel} from "ts-mongoose"
-import {LANG, RIGHTS} from "@types"
-import Logger from "@class/Logger"
+import mongoose from 'mongoose'
+import {createSchema, ExtractDoc, Type, typedModel} from 'ts-mongoose'
+import {LANG, RIGHTS} from '@types'
+import Logger from '@class/Logger'
 
 const command = Type.object({ required: true}).of({
     permission: Type.number({
@@ -24,15 +24,15 @@ export const Users = createSchema({
     fullName: Type.string({required: true}),
     sex: Type.number()
 
-});
+})
 
-export const userModel = typedModel("User", Users, undefined, undefined, {
+export const userModel = typedModel('User', Users, undefined, undefined, {
     getByVkId(id: number) {
         return this.find({
             vkId: id
-        });
+        })
     }
-});
+})
 
 
 export const chatSchema = createSchema({
@@ -47,14 +47,14 @@ export const chatSchema = createSchema({
         to: Type.number({required: false, default: -1})
     }),
     prefix: Type.string({
-        default: "!",
+        default: '!',
         required: false
     }),
     lang: Type.number({
         required: true,
         default: LANG.RUSSIAN
     }),
-    users: Type.array().of({
+    users: Type.array({ required: true }).of({
         userId: Type.number({required: true}),
         permission: Type.number({required: true, max: 100, min: -100}),
         inChat: Type.boolean({required: true})
@@ -65,7 +65,7 @@ export const chatSchema = createSchema({
     }).of({
         name: Type.string({required: true}),
         permission: Type.number({required: true, max: 100, min: -100}),
-        emoji: Type.string({required: false, default: ""})
+        emoji: Type.string({required: false, default: ''})
     }),
     commands: Type.object({
         required: true
@@ -78,17 +78,18 @@ export const chatSchema = createSchema({
         roleEmoji: command,
         setRole: command,
         getAdminList: command,
-        ping: command
+        ping: command,
+        myRole: command
     })
-});
+})
 
-export const chatModel = typedModel("Chat", chatSchema, undefined, undefined, {
+export const chatModel = typedModel('Chat', chatSchema, undefined, undefined, {
     getByPeerId(peerId: number) {
         return this.find({
             peerId
         })
     }
-});
+})
 
 
 export class DB {
@@ -100,7 +101,7 @@ export class DB {
 
 
     constructor(url: string, logger: Logger) {
-        this.url = url;
+        this.url = url
 
 
         mongoose.connect(this.url, {
@@ -109,19 +110,19 @@ export class DB {
             useFindAndModify: true,
             useCreateIndex: true
         }).then().catch(err => {
-            logger.error(`Ошибка при подключении к базе данных: ${err.message}`, "@dataBase/index")
-        });
+            logger.error(`Ошибка при подключении к базе данных: ${err.message}`, '@dataBase/index')
+        })
 
-        this.db = mongoose.connection;
+        this.db = mongoose.connection
 
         this.db.once('open', () => {
-            logger.info("Успешное подключение к БД")
-        });
-        this.db.on("error", err => {
-            logger.error(`Ошибка в базе данных: ${err.message}`, "@dataBase/index")
-        });
+            logger.info('Успешное подключение к БД')
+        })
+        this.db.on('error', err => {
+            logger.error(`Ошибка в базе данных: ${err.message}`, '@dataBase/index')
+        })
 
-        this.user = new userModel();
-        this.chat = new chatModel();
+        this.user = new userModel()
+        this.chat = new chatModel()
     }
 }

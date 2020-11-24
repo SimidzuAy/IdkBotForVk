@@ -1,17 +1,18 @@
-import {MessageContext, VK} from "vk-io"
-import {HearManager} from "@vk-io/hear"
+import {VK} from 'vk-io'
+import {HearManager} from '@vk-io/hear'
 
 import loadCommands from './loadCommands'
 import User from '@class/User'
 import cfg from '@config'
-import {MContext} from "@types"
-import {DB} from "./dataBase"
-import Chat from "@class/Chat"
-import Logger from "@class/Logger"
+import {MContext} from '@types'
+import {DB} from './dataBase'
+import Chat from '@class/Chat'
+import Logger from '@class/Logger'
+import {checkUserIsBanned} from '@utils'
 
 const vk: VK = new VK({
     token: cfg.token,
-    language: "ru"
+    language: 'ru'
 })
 
 const logger = new Logger()
@@ -26,18 +27,18 @@ async function getUser(context: MContext) {
     if (!users.has(String(context.senderId))) {
 
         user = await new User(context.senderId)
-            .getUser(0, vk);
+            .getUser(0, vk)
 
         users.set(String(context.senderId), {
             user,
             lastTime: Date.now()
         })
     } else {
-        user = users.get(String(context.senderId)).user;
-        users.get(String(context.senderId)).lastTime = Date.now();
+        user = users.get(String(context.senderId)).user
+        users.get(String(context.senderId)).lastTime = Date.now()
     }
 
-    return user;
+    return user
 }
 
 async function getChat(context: MContext) {
@@ -54,20 +55,20 @@ async function getChat(context: MContext) {
         chats.set(String(context.peerId), {
             chat: chat,
             lastTime: Date.now()
-        });
+        })
     } else {
-        chat = chats.get(String(context.peerId)).chat;
-        chats.get(String(context.peerId)).lastTime = Date.now();
+        chat = chats.get(String(context.peerId)).chat
+        chats.get(String(context.peerId)).lastTime = Date.now()
     }
 
-    return chat;
+    return chat
 
 }
 
 const hearManager = new HearManager<MContext>()
 
 
-vk.updates.on(['message_new'], async (context: MContext, next: Function) => {
+vk.updates.on(['message_new'], async (context: MContext, next) => {
     if (!context.senderId || !context.peerId || context.senderId < 0 || !context.chatId) return
 
     context.vk = vk
@@ -80,32 +81,20 @@ vk.updates.on(['message_new'], async (context: MContext, next: Function) => {
     context.user = userAndChat[0]
     context.chat = userAndChat[1]
 
-    if (context.chat.getBanned().find(x => x.bannedId === context.senderId)) {
+    if ( await checkUserIsBanned(context) ) return
 
-        const methods: [Promise<MessageContext>, Promise<number>] = [
-            context.send("Данный пользователь находится в бане!"),
-            vk.api.messages.removeChatUser({
-                chat_id: context.chatId,
-                member_id: context.senderId
-            })
-        ];
-
-        return await Promise.all(methods)
-    }
-
-    if ( !context.chat.getAllUsers().find(x => x.userId === context.senderId)!.inChat )
+    if (!context.chat.getAllUsers().find(x => x.userId === context.senderId)!.inChat)
         context.chat.newChatUser(context.senderId)
 
     await next()
 
-});
+})
 
-vk.updates.on(['message_new'], async (context: MContext, next: Function) => {
+vk.updates.on(['message_new'], async (context: MContext, next) => {
     try {
-        // @ts-ignore
         await hearManager.middleware(context, next)
     } catch (error) {
-        await context.reply("Произошла ошибка: " + error.message)
+        await context.reply('Произошла ошибка: ' + error.message)
         logger.error(error.message)
         throw error
     }
@@ -120,40 +109,29 @@ vk.updates.on(['chat_invite_user'], async (context: MContext) => {
 
     context.chat = await getChat(context)
 
-    if (context.chat.getBanned().find(x => x.bannedId === context.eventMemberId)) {
-
-        const methods: [Promise<MessageContext>, Promise<number>] = [
-            context.send("Данный пользователь находится в бане!"),
-            vk.api.messages.removeChatUser({
-                chat_id: context.chatId,
-                member_id: context.eventMemberId
-            })
-        ];
-
-        return await Promise.all(methods)
-    }
+    if ( await checkUserIsBanned(context) ) return
 
     if (context.eventMemberId)
         context.chat.newChatUser(context.eventMemberId)
 
-});
+})
 
-vk.updates.on(["chat_kick_user"], async (context: MContext) => {
+vk.updates.on(['chat_kick_user'], async (context: MContext) => {
 
     if (!context.chatId) return
 
     if (context.eventMemberId)
         context.chat.removeChatUser(context.eventMemberId)
     else
-        console.log("why")
+        console.log('why')
 })
 
-loadCommands(hearManager, logger);
+loadCommands(hearManager, logger)
 
-hearManager.onFallback(async (context) => {
+hearManager.onFallback(async context => {
     if (!context.isChat)
-        return await context.reply("Команда не найдена")
-});
+        return await context.reply('Команда не найдена')
+})
 
 
 setInterval(() => {
@@ -161,7 +139,7 @@ setInterval(() => {
         if (Date.now() - users.get(key).lastTime > 30000)
             users.delete(key)
     })
-}, 1000 * 60 * 5);
+}, 1000 * 60 * 5)
 
 
 setInterval(() => {
@@ -169,7 +147,7 @@ setInterval(() => {
         if (Date.now() - chats.get(key).lastTime > 30000)
             chats.delete(key)
     })
-}, 1000 * 60 * 15);
+}, 1000 * 60 * 15)
 
 
-vk.updates.start().catch(console.error).then(() => logger.info("Бот запущен"));
+vk.updates.start().catch(console.error).then(() => logger.info('Бот запущен'))

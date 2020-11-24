@@ -1,24 +1,24 @@
-import Command from "@command"
-import {ERRORS, MContext, getUserReg} from "@types"
-import {HearManager} from "@vk-io/hear"
+import ICommand from '@command'
+import {ERRORS, MContext, getUserReg} from '@types'
+import {HearManager} from '@vk-io/hear'
 import cfg from '@config'
-import {Keyboard} from "vk-io"
+import {Keyboard} from 'vk-io'
 import {getFullNameById, getIdByMatch, getIdFromReply, isThisCommand, sendError} from '@utils'
 
-export default class extends Command {
+export default class implements ICommand {
 
-    readonly PATH: string = __filename
+    readonly PATH: string = __filename;
 
     readonly hears: any[] = [
-        (value: string, context: MContext) => {
+        (value: string, context: MContext): boolean => {
             const regExps = [
-                new RegExp(`^${context.chat.getPrefix()}\\s*(.+)\\s+${getUserReg}`, "i"),
-                new RegExp(`^${context.chat.getPrefix()}\\s*(.+)`, "i")
+                new RegExp(`^${context.chat.getPrefix()}\\s*(.+)\\s+${getUserReg}`, 'i'),
+                new RegExp(`^${context.chat.getPrefix()}\\s*(.+)`, 'i')
             ]
 
             return isThisCommand(value, context, regExps)
         },
-        (value: string, context: MContext) => {
+        (value: string, context: MContext): boolean => {
             if (context.messagePayload) {
                 const obj = JSON.parse(context.messagePayload)
 
@@ -34,12 +34,11 @@ export default class extends Command {
                 }
             }
 
-            return false;
+            return false
         }
     ];
 
-    // @ts-ignore
-    readonly handler = async (context: MContext, next: Function) => {
+    readonly handler = async (context: MContext, next: Function): Promise<unknown> => {
 
         if (!context.isChat) return next()
 
@@ -52,36 +51,36 @@ export default class extends Command {
             }
         }
 
-        if (!check) return next();
+        if (!check) return next()
 
 
-        let id: number | null = await getIdByMatch(context.vk, [context.$match[2], context.$match[3]]) ||
-            await getIdFromReply(context);
+        const id: number | null = await getIdByMatch(context.vk, [context.$match[2], context.$match[3]]) ||
+            await getIdFromReply(context)
 
         if (id) {
 
             if (id < 0)
                 return await context.send([
-                    "Я не хочу трогать своих братьев!",
-                    "I dont wanna touch my brothers!"
+                    'Я не хочу трогать своих братьев!',
+                    'I dont wanna touch my brothers!'
                 ][context.chat.getLang()])
 
             if (id === context.senderId) {
-                return await context.send(`Ну и нахуя ты самовыпил ${context.user.selectBySex(["сделало", "сделала", "сделал"])}`)
+                return await context.send(`Ну и нахуя ты самовыпил ${context.user.selectBySex(['сделало', 'сделала', 'сделал'])}`)
             }
 
             const inChat = (await context.vk.api.messages.getConversationMembers({
                 peer_id: context.peerId
-            })).items;
+            })).items
 
             if (!inChat.find(x => x.member_id === id))
                 return await sendError(ERRORS.USER_NOT_FOUND, context.peerId, context.chat.getLang(), context.vk)
 
             const names = [
                 `[id${context.senderId}|${context.user.getFullName()}]`,
-                `[id${id}|${await getFullNameById(context.vk, id, "gen")}]`];
+                `[id${id}|${await getFullNameById(context.vk, id, 'gen')}]`]
 
-            const string = context.$match[1][0].toUpperCase() + context.$match[1].substr(1).toLowerCase();
+            const string = context.$match[1][0].toUpperCase() + context.$match[1].substr(1).toLowerCase()
 
             return await context.vk.api.messages.send({
                 message: `${names[0]} ${context.user.selectBySex(cfg.rp[context.$match[1].toLowerCase()])} ${names[1]}`,
@@ -91,7 +90,7 @@ export default class extends Command {
                 keyboard: Keyboard.builder()
                     .textButton({
                         label: `${string} в ответ`,
-                        color: "negative",
+                        color: 'negative',
                         payload: `{"${cfg.payload}": {"from": ${id},"to": "id${context.senderId}","action": "${context.$match[1]}"}}`
                     }).inline(true)
 
@@ -101,8 +100,6 @@ export default class extends Command {
     };
 
     constructor(hearManager: HearManager<MContext>) {
-        super(hearManager)
-
         hearManager.hear(this.hears, this.handler)
     }
 

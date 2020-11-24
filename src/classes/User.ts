@@ -1,16 +1,14 @@
-import {RIGHTS} from "@types"
-import {userModel, Users} from "../dataBase"
-import {ExtractDoc} from "ts-mongoose"
-import {VK} from "vk-io"
-import {BaseSex} from "vk-io/lib/api/schemas/objects"
+import {RIGHTS} from '@types'
+import {userModel, Users} from '../dataBase'
+import {ExtractDoc} from 'ts-mongoose'
+import {VK} from 'vk-io'
 
 export default class User {
-    private vkId: number
-    private right: RIGHTS[] = [RIGHTS.USER]
-    private fullName: string = ""
-    // @ts-ignore
-    private user!: ExtractDoc<typeof Users>
-    private sex: BaseSex = 0
+    private vkId: number;
+    private right: RIGHTS[] = [RIGHTS.USER];
+    private fullName = '';
+    private user!: ExtractDoc<typeof Users>;
+    private sex: number = 0;
 
 
     constructor(vkId: number) {
@@ -18,13 +16,13 @@ export default class User {
 
     }
 
-    async getUser(id?: number, vk?: VK) {
+    async getUser(id?: number, vk?: VK): Promise<this> {
 
         if (id && vk) {
             const user = (await userModel.getByVkId(this.vkId))[0]
 
             if (user) {
-                this.user = user;
+                this.user = user
             } else {
                 const _user = (await vk?.api.users.get({
                     user_ids: String(id),
@@ -49,13 +47,12 @@ export default class User {
                 this.fullName = user.fullName
                 this.vkId = user.vkId
                 this.right = user.rights!
-                // @ts-ignore
                 this.sex = user.sex!
             } else {
 
                 const _user = (await vk.api.users.get({
                     user_ids: String(this.vkId),
-                    fields: ["sex"]
+                    fields: ['sex']
                 }))[0]
 
                 const fullName = `${_user.first_name} ${_user.last_name}`
@@ -74,7 +71,7 @@ export default class User {
             }
 
         }
-        return this;
+        return this
 
     }
 
@@ -91,14 +88,14 @@ export default class User {
     }
 
     selectBySex(array: string[]): string {
-        return array[this.sex].toLowerCase();
+        return array[this.sex].toLowerCase()
     }
 
-    getFullName() {
+    getFullName(): string {
         return this.fullName
     }
 
-    save() {
+    save(): void {
         this.user.save()
     }
 

@@ -1,26 +1,26 @@
-import Command from "@command"
-import {commands, ERRORS, MContext, getUserReg} from "@types"
-import {HearManager} from "@vk-io/hear"
-import {aliasesToCommand, getIdByMatch, getIdFromReply, isThisCommand, sendError} from "@utils"
+import ICommand from '@command'
+import {commands, ERRORS, MContext, getUserReg} from '@types'
+import {HearManager} from '@vk-io/hear'
+import {aliasesToCommand, getIdByMatch, getIdFromReply, isThisCommand, sendError} from '@utils'
 
-export default class extends Command {
+export default class implements ICommand {
 
-    readonly PATH: string = __filename
+    readonly PATH: string = __filename;
 
     readonly hears: any[] = [
-        (value: string, context: MContext) => {
+        (value: string, context: MContext): boolean => {
 
             const regExps = [
-                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.setRole.aliases)} ${getUserReg} (\\d{1,3})$`, "i"),
-                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.setRole.aliases)} (\\d{1,3})$`, "i"),
-                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.myRole.aliases)}`, "i")
+                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.setRole.aliases)} ${getUserReg} (\\d{1,3})$`, 'i'),
+                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.setRole.aliases)} (\\d{1,3})$`, 'i'),
+                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.myRole.aliases)}`, 'i')
             ]
 
             return  isThisCommand(value, context, regExps)
         }
     ];
 
-    readonly handler = async (context: MContext) => {
+    readonly handler = async (context: MContext): Promise<unknown> => {
         const id = await getIdFromReply(context) ||
             await getIdByMatch(context.vk, [context.$match[1], context.$match[2]])
 
@@ -31,13 +31,13 @@ export default class extends Command {
             return await context.send(`Роль: ${name}`)
         }
 
-        const thisUser = context.chat.getUser(context.senderId)!;
-        let permission: number;
+        const thisUser = context.chat.getUser(context.senderId)!
+        let permission: number
 
         if (!isNaN(Number(context.$match[3]))) {
             permission = Number(context.$match[3])
         } else {
-            permission = Number(context.$match[2]);
+            permission = Number(context.$match[2])
         }
 
         if (id === context.senderId)
@@ -51,8 +51,8 @@ export default class extends Command {
 
         if (thisUser.permission <= permission)
             return await context.send([
-                "Вы не можете выдавать права которые выше или равняются вашему!",
-                "You cannot issue rights that are higher than or equal to yours!"
+                'Вы не можете выдавать права которые выше или равняются вашему!',
+                'You cannot issue rights that are higher than or equal to yours!'
             ][context.chat.getLang()])
 
         if (!context.chat.chatGetRights().find(x => x.permission === permission))
@@ -61,13 +61,11 @@ export default class extends Command {
         context.chat.userSetPermission(id, permission)
         context.chat.save()
 
-        await context.send(["Уровень прав успешно изменён!", "Permission level successfully changed!"][context.chat.getLang()])
+        await context.send(['Уровень прав успешно изменён!', 'Permission level successfully changed!'][context.chat.getLang()])
 
     };
 
     constructor(hearManager: HearManager<MContext>) {
-        super(hearManager)
-
         hearManager.hear(this.hears, this.handler)
     }
 

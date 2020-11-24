@@ -1,6 +1,6 @@
-import {MessageContext, VK} from "vk-io"
-import User from "./classes/User"
-import Chat from "./classes/Chat"
+import {MessageContext, VK} from 'vk-io'
+import User from './classes/User'
+import Chat from './classes/Chat'
 
 export enum ERRORS {
     USER_NOT_FOUND,
@@ -15,7 +15,7 @@ export enum ERRORS {
     TOO_BIG_SMALL_RIGHT_LEVEL
 }
 
-export const getUserReg = "(?:\\[(\\S+?)\\|(?:.+?)]|(?:http(?:s|):\\/\\/|)vk\\.com\\/(.+))"
+export const getUserReg = '(?:\\[(\\S+?)\\|(?:.+?)]|(?:http(?:s|):\\/\\/|)vk\\.com\\/(.+))'
 
 export enum RIGHTS {
     USER,
@@ -28,14 +28,12 @@ export enum LANG {
     ENGLISH
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface MContext extends MessageContext {
     user: User,
     chat: Chat,
     vk: VK
 }
-
-export type commandsName = 'ban' | 'unBan' | 'prefix' | 'createRole' | 'changeRoleRight'
-    | 'roleEmoji' | 'setRole' | 'getAdminList' | 'ping'
 
 export const commands = {
     ban: {
@@ -45,13 +43,13 @@ export const commands = {
             'заблокировать'
         ],
         usages: [[
-            "!ban @user",
-            "!ban vk.com/user",
-            "!ban - с ответом"
+            '!ban @user',
+            '!ban vk.com/user',
+            '!ban - с ответом'
         ], [
-            "!ban @user",
-            "!ban vk.com/user",
-            "!ban - with reply"
+            '!ban @user',
+            '!ban vk.com/user',
+            '!ban - with reply'
         ]]
 
     },
@@ -63,13 +61,13 @@ export const commands = {
             'разблокировать'
         ],
         usages: [[
-            "!unban @user",
-            "!unban vk.com/user",
-            "!unban - с ответом"
+            '!unban @user',
+            '!unban vk.com/user',
+            '!unban - с ответом'
         ], [
-            "!unban @user",
-            "!unban vk.com/user",
-            "!unban - with reply"
+            '!unban @user',
+            '!unban vk.com/user',
+            '!unban - with reply'
         ]]
     },
     prefix: {
@@ -80,7 +78,7 @@ export const commands = {
         usages: [[
             '!префикс *символ*'
         ], [
-            "!prefix *symbol*"
+            '!prefix *symbol*'
         ]]
     },
     createRole: {
@@ -89,9 +87,9 @@ export const commands = {
             'create role'
         ],
         usages: [[
-            "!создать роль *название* *уровень прав*"
+            '!создать роль *название* *уровень прав*'
         ], [
-            "!create role *name* *right level*"
+            '!create role *name* *right level*'
         ]]
     },
     changeRoleRight: {
@@ -101,9 +99,9 @@ export const commands = {
             'право'
         ],
         usages: [[
-            "!право *команда* *уровень прав*"
+            '!право *команда* *уровень прав*'
         ], [
-            "!right *command* *right level*"
+            '!right *command* *right level*'
         ]]
     },
     roleEmoji: {
@@ -113,9 +111,9 @@ export const commands = {
             'эмоджи'
         ],
         usages: [[
-            "!емоджи *уровень прав* *эмоджи*"
+            '!емоджи *уровень прав* *эмоджи*'
         ], [
-            "!emoji *right level* *emoji*"
+            '!emoji *right level* *emoji*'
         ]]
     },
     setRole: {
@@ -124,11 +122,11 @@ export const commands = {
             'role'
         ],
         usages: [[
-            "!роль @user *уровень прав*",
-            "!роль *уровень прав* - на ответ",
+            '!роль @user *уровень прав*',
+            '!роль *уровень прав* - на ответ',
         ], [
-            "!role @user *right level*",
-            "!role *right level* - on answer"
+            '!role @user *right level*',
+            '!role *right level* - on answer'
         ]]
     },
     myRole: {
@@ -138,7 +136,7 @@ export const commands = {
             'role',
             'my\\s*role'
         ],
-        usages: [["!роль"], ["!role"]]
+        usages: [['!роль'], ['!role']]
     },
     getAdminList: {
         aliases: [
@@ -147,14 +145,16 @@ export const commands = {
             'управляющие',
             'admins'
         ],
-        usages: [["!админы"], ["!admins"]]
+        usages: [['!админы'], ['!admins']]
     },
     ping: {
         aliases: [
             'ping',
             'пинг'
         ],
-        usages: [["!пинг"], ["!ping"]]
+        usages: [['!пинг'], ['!ping']]
     }
 
 }
+
+export type commandsName = keyof typeof commands
