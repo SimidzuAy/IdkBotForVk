@@ -8,7 +8,7 @@ export default class User {
     private right: RIGHTS[] = [RIGHTS.USER];
     private fullName = '';
     private user!: ExtractDoc<typeof Users>;
-    private sex: number = 0;
+    private sex = 0;
 
 
     constructor(vkId: number) {
