@@ -1,3 +1,5 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/854a5523c7e948439d78243d4db76aaa)](https://www.codacy.com/gh/SimidzuAy/IdkBotForVk/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=SimidzuAy/IdkBotForVk&amp;utm_campaign=Badge_Grade)
+
 ## 🐛 Возможности бота
   * Блокировка пользователей
   * Префикс у чатов
