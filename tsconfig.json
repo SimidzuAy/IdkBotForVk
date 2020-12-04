@@ -1,8 +1,8 @@
 {
-
   "compilerOptions": {
     "target": "es6",
     "module": "CommonJS",
+    "allowJs": true,
     "importHelpers": true,
     "strict": true,
     "outDir": "build",
@@ -15,7 +15,7 @@
     "baseUrl": "./src",
     "paths": {
       "@command": [
-        "modules/Command"
+        "modules/ICommand"
       ],
       "@config": [
         "config"

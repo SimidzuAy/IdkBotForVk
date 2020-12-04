@@ -112,7 +112,7 @@ export async function checkUserIsBanned(context: MContext): Promise<boolean> {
 
     if ( !context.chatId ) return false
 
-    if (context.chat.getBanned().find(x => x.bannedId === context.eventMemberId)) {
+    if (context.chat.bans.find(x => x.bannedId === context.eventMemberId)) {
         const methods: [Promise<MessageContext>, Promise<number>] = [
             context.send('Данный пользователь находится в бане!'),
             context.vk.api.messages.removeChatUser({
@@ -126,4 +126,8 @@ export async function checkUserIsBanned(context: MContext): Promise<boolean> {
     }
 
     return false
+}
+
+export function genCommand(prefix: string, command: commandsName): string {
+    return `^${prefix}\\s*${aliasesToCommand(commands[command].aliases)}`
 }

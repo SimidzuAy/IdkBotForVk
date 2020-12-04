@@ -22,7 +22,8 @@ export default class {
         const date = new Date().toLocaleString('ru-RU')
 
         this.stream.write(`[INFO] ( ${date} ) ${info}\n`)
-        console.log(`[${COLORS.CYAN}INFO${COLORS.NONE}]: ( ${COLORS.YELLOW}${date}${COLORS.NONE} ): ${info}`)
+        console.log(`[${COLORS.CYAN}INFO${COLORS.NONE}]: ( ${COLORS.YELLOW}${date}${COLORS.NONE} ): ${info
+            .replace(/(s|ms|m|h|d|y)/g, `${COLORS.YELLOW}$&${COLORS.NONE}`)}`)
     }
 
     module(path: string): void {

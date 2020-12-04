@@ -1,16 +1,16 @@
 {
   "name": "idk_vk_bot",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./build",
-    "start": "cls && node ./build/index.js",
+    "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./build && cls",
+    "start": "node ./build/index.js",
     "dev": "npm run build && npm start",
     "test": "jest"
   },
   "keywords": [],
-  "author": "Simidzu-ay",
+  "author": "Simidzu Ay",
   "license": "ISC",
   "dependencies": {
     "@vk-io/hear": "^1.0.2",
@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
-    "@types/mongoose": "^5.7.36",
+    "@types/mongoose": "^5.10.2",
     "@types/node": "^14.14.5",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",

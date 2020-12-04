@@ -1,23 +1,21 @@
 import ICommand from '@command'
-import {commands, ERRORS, MContext} from '@types'
-import {HearManager} from '@vk-io/hear'
-import {aliasesToCommand, isThisCommand, sendCommandUsage, sendError} from '@utils'
+import {ERRORS, MContext} from '@types'
+import {genCommand, isThisCommand, sendCommandUsage, sendError} from '@utils'
+import Chat from '@class/Chat'
 
 export default class implements ICommand {
-
-    readonly PATH: string = __filename;
 
     readonly hears: any[] = [
         (value: string, context: MContext): boolean => {
             const regExps = [
-                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.createRole.aliases)}\\s+(.+)\\s+(\\d{1,3})$`, 'i')
+                new RegExp(`${genCommand(context.chat.prefix, 'createRole')}\\s+(.+)\\s+(\\d{1,3})$`, 'i')
             ]
 
             const ans = isThisCommand(value, context, regExps)
 
             if ( !ans ) {
-                if (new RegExp(`^${context.chat.getPrefix()}${aliasesToCommand(commands.createRole.aliases)}`).test(value)) {
-                    sendCommandUsage('createRole', context.peerId, context.chat.getLang(), context.vk)
+                if (new RegExp(genCommand(context.chat.prefix, 'createRole')).test(value)) {
+                    sendCommandUsage('createRole', context.peerId, context.chat.lang, context.vk)
                 }
             }
             return ans
@@ -26,26 +24,23 @@ export default class implements ICommand {
 
     readonly handler = async (context: MContext): Promise<unknown> => {
 
-        if (context.chat.getCommandPermission('createRole') > context.chat.userGetPermission(context.senderId))
-            return
+        if (context.chat.commands['createRole'].permission > Chat.getUserFromChat(context.chat, context.senderId)!.permission)
+            return await sendError(ERRORS.NOT_ENOUGH_RIGHTS, context.peerId, context.chat.lang, context.vk)
 
         const num = Number(context.$match[2])
 
         if (num >= -100 && num <= 99) {
-            if (context.chat.userHasPermission(context.senderId, 90)) {
-                context.chat.crateRight(num, context.$match[1])
-                context.chat.save()
-                await context.send('Ну создал и чё.')
-            } else
-                return await sendError(ERRORS.NOT_ENOUGH_RIGHTS, context.peerId, context.chat.getLang(), context.vk)
+            context.chat.rights.push({
+                name: context.$match[1],
+                permission: num,
+                emoji: ''
+            })
+            context.chat.save()
+            await context.send('Ну создал и чё.')
         } else {
-            await sendError(ERRORS.TOO_BIG_SMALL_RIGHT_LEVEL, context.peerId, context.chat.getLang(), context.vk)
+            await sendError(ERRORS.TOO_BIG_SMALL_RIGHT_LEVEL, context.peerId, context.chat.lang, context.vk)
         }
 
     };
-
-    constructor(hearManager: HearManager<MContext>) {
-        hearManager.hear(this.hears, this.handler)
-    }
 
 }

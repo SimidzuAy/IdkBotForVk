@@ -5,7 +5,7 @@ import loadCommands from './loadCommands'
 import User from '@class/User'
 import cfg from '@config'
 import {MContext} from '@types'
-import {DB} from './dataBase'
+import {DB} from './database'
 import Chat from '@class/Chat'
 import Logger from '@class/Logger'
 import {checkUserIsBanned} from '@utils'
@@ -83,8 +83,8 @@ vk.updates.on(['message_new'], async (context: MContext, next) => {
 
     if ( await checkUserIsBanned(context) ) return
 
-    if (!context.chat.getAllUsers().find(x => x.userId === context.senderId)!.inChat)
-        context.chat.newChatUser(context.senderId)
+    if (!Chat.getUserFromChat(context.chat, context.senderId)!.inChat)
+        Chat.newChatUser(context.chat, context.senderId)
 
     await next()
 
@@ -112,7 +112,7 @@ vk.updates.on(['chat_invite_user'], async (context: MContext) => {
     if ( await checkUserIsBanned(context) ) return
 
     if (context.eventMemberId)
-        context.chat.newChatUser(context.eventMemberId)
+        Chat.newChatUser(context.chat, context.eventMemberId)
 
 })
 
@@ -121,7 +121,7 @@ vk.updates.on(['chat_kick_user'], async (context: MContext) => {
     if (!context.chatId) return
 
     if (context.eventMemberId)
-        context.chat.removeChatUser(context.eventMemberId)
+        Chat.removeUserFromChat(context.chat, context.eventMemberId)
     else
         console.log('why')
 })

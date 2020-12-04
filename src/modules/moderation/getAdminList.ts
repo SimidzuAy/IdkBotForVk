@@ -1,16 +1,14 @@
 import ICommand from '@command'
-import {commands, MContext} from '@types'
-import {HearManager} from '@vk-io/hear'
-import {aliasesToCommand, isThisCommand} from '@utils'
+import {MContext} from '@types'
+import {genCommand, isThisCommand} from '@utils'
+import Chat from '@class/Chat'
+import User from '@class/User'
 
 export default class implements ICommand {
-
-    readonly PATH: string = __filename;
-
     readonly hears: any[] = [
         (value: string, context: MContext): boolean => {
             const regExps = [
-                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.getAdminList.aliases)}`, 'i')
+                new RegExp(genCommand(context.chat.prefix, 'getAdminList'), 'i')
             ]
 
             return isThisCommand(value, context, regExps)
@@ -19,14 +17,14 @@ export default class implements ICommand {
 
     readonly handler = async (context: MContext): Promise<unknown> => {
 
-        if (context.chat.getCommandPermission('getAdminList') > context.chat.userGetPermission(context.senderId))
+        if (context.chat.commands['getAdminList'].permission > Chat.getUserFromChat(context.chat, context.senderId)!.permission)
             return
 
-        const users = context.chat.getAllUsers()
+        const users = context.chat.users
 
         const admins = users.filter(x => x.permission >= 1 && x.userId > 0)
 
-        const rights = context.chat.chatGetRights().sort((a, b) => {
+        const rights = context.chat.rights.sort((a, b) => {
             if (a.permission > b.permission) return -1
             else if (a.permission == b.permission) return 0
             return 1
@@ -36,17 +34,17 @@ export default class implements ICommand {
 
         for (const right of rights) {
 
-            if (!context.chat.getAllUsers().find(x => x.permission === right.permission && x.userId > 0)
+            if (!users.find(x => x.permission === right.permission && x.userId > 0 )
                 || right.permission <= 0)
                 continue
 
             msg += `\n\n${right.emoji} ${right.name}:`
 
             for (const admin of admins) {
-                if (right.permission === context.chat.getUser(admin.userId)!.permission) {
-                    const user = await context.user.getUser(admin.userId, context.vk)
+                if (right.permission === Chat.getUserFromChat(context.chat, admin.userId)!.permission) {
+                    const user = await new User(admin.userId).getUser(admin.userId, context.vk)
 
-                    msg += `\n[id${admin.userId}|${user.getFullName()}] ${context.chat.getUser(admin.userId)!.inChat ? '' : '🚪'}`
+                    msg += `\n[id${admin.userId}|${user.fullName}] ${Chat.getUserFromChat(context.chat, admin.userId)!.inChat ? '' : '🚪'}`
                 }
             }
         }
@@ -55,9 +53,4 @@ export default class implements ICommand {
             disable_mentions: 1
         })
     };
-
-    constructor(hearManager: HearManager<MContext>) {
-        hearManager.hear(this.hears, this.handler)
-    }
-
 }

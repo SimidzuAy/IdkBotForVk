@@ -1,30 +1,13 @@
-import {chatModel, chatSchema} from '../dataBase'
+import {chatModel, chatSchema} from '../database'
 import {ExtractDoc} from 'ts-mongoose'
 import {MessagesConversationMember} from 'vk-io/lib/api/schemas/objects'
 import {commandsName, LANG} from '@types'
 
 interface IUserInChat {
-    userId: number,
-    permission: number,
-    inChat: true
+    userId:     number
+    permission: number
+    inChat:     boolean
 }
-
-interface IChatRight {
-    name: string,
-    permission: number,
-    emoji: string
-}
-
-interface IBanInChat {
-    bannedId: number,
-    byId: number,
-    from: number,
-    to: number
-}
-
-
-// Костыль, я знаю
-// Но я слишком тупой чтобы сделать по другому
 
 
 export default class {
@@ -39,7 +22,7 @@ export default class {
         this.users = users
     }
 
-    async getChat(): Promise<this> {
+    async getChat(): Promise<ExtractDoc<typeof chatSchema>> {
         const chat = (await chatModel.getByPeerId(this.peerId))[0]
 
         if (chat)
@@ -111,25 +94,13 @@ export default class {
                     setRole: {permission: 80},
                     getAdminList: {permission: 0},
                     ping: {permission: 0}
-                }
-
+                },
+                prefix: '!',
+                bans: []
             })
         }
 
-        return this
-    }
-
-    userHasPermission(userId: number, permission: number): boolean {
-        return this.getUser(userId)!.permission >= permission
-    }
-
-    userGetPermission(userId: number): number {
-        return this.getUser(userId)!.permission
-    }
-
-    userSetPermission(userId: number, permission: number): void {
-        this.getUser(userId)!.permission = permission
-        this.chat.save()
+        return this.chat
     }
 
 
@@ -137,82 +108,19 @@ export default class {
         return this.chat.users!.find(x => x.userId === userId) as IUserInChat
     }
 
-    getAllUsers(): IUserInChat[] {
-        return this.chat.users! as IUserInChat[]
-    }
 
-    roleSetEmoji(permission: number, emoji: string): void {
-        this.chat.rights!.find(x => x.permission === permission)!.emoji = emoji
-    }
+    static newChatUser(chat: ExtractDoc<typeof chatSchema>, userId: number): void {
 
-
-    newChatUser(userId: number): void {
-
-        const userIndex = this.chat.users!.findIndex(user => user.userId === userId)
+        const userIndex = chat.users.findIndex(user => user.userId === userId)
         if (userIndex < 0)
-            this.chat.users!.push({
+            chat.users.push({
                 userId,
                 permission: 0,
                 inChat: true
             })
 
         else
-            this.chat.users![userIndex].inChat = true
-    }
-
-    removeChatUser(userId: number): void {
-
-        const userIndex = this.chat.users!.findIndex(user => user.userId === userId)
-
-        if (userIndex > -1)
-            this.chat.users![userIndex].inChat = false
-    }
-
-    chatGetRights(): IChatRight[]  {
-        return this.chat.rights! as IChatRight[]
-    }
-
-    ban(bannedId: number, who: number, to = -1): void {
-        this.chat.bans!.push({
-            bannedId,
-            byId: who,
-            from: Date.now(),
-            to: to
-        })
-    }
-
-    unBan(userId: number): void {
-        this.chat.bans = this.chat.bans!.filter(x => x.bannedId !== userId)
-    }
-
-    setPrefix(prefix: string): void {
-        this.chat.prefix = prefix
-    }
-
-
-    getPrefix(): string {
-        return `\\${this.chat.prefix}`
-    }
-
-    crateRight(permission: number, name: string): void {
-        this.chat.rights!.push({
-            name,
-            permission,
-            emoji: ''
-        })
-    }
-
-    getBanned(): IBanInChat[]  {
-        return this.chat.bans! as IBanInChat[]
-    }
-
-    getLang(): LANG {
-        return this.chat.lang
-    }
-
-
-    getCommandPermission(command: commandsName): number {
-        return this.chat.commands[command].permission
+            chat.users![userIndex].inChat = true
     }
 
     chatSetCommandPermission(command: commandsName, permission: number): void {
@@ -222,7 +130,14 @@ export default class {
     }
 
 
-    save(): void {
-        this.chat.save()
+    static removeUserFromChat(chat: ExtractDoc<typeof chatSchema>, id: number): void {
+        const userIndex = chat.users.findIndex(user => user.userId === id)
+
+        if (userIndex > -1)
+            chat.users[userIndex].inChat = false
+    }
+
+    static getUserFromChat(chat: ExtractDoc<typeof chatSchema>, id: number): IUserInChat | undefined  {
+        return chat.users.find(x => x.userId === id)
     }
 }

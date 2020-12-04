@@ -1,23 +1,21 @@
 import ICommand from '@command'
-import {commands, MContext} from '@types'
-import {HearManager} from '@vk-io/hear'
-import {aliasesToCommand, isThisCommand, sendCommandUsage} from '@utils'
+import {ERRORS, MContext} from '@types'
+import {genCommand, isThisCommand, sendCommandUsage, sendError} from '@utils'
+import Chat from '@class/Chat'
 
 export default class implements ICommand {
-
-    readonly PATH: string = __filename;
 
     readonly hears: any[] = [
         (value: string, context: MContext): boolean => {
             const regExps = [
-                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.prefix.aliases)} (.+)`, 'i')
+                new RegExp(`${genCommand(context.chat.prefix, 'prefix')} (.+)`, 'i')
             ]
 
             const ans = isThisCommand(value, context, regExps)
 
             if ( !ans ) {
-                if (new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.prefix.aliases)}`).test(value)) {
-                    sendCommandUsage('prefix', context.peerId, context.chat.getLang(), context.vk)
+                if (new RegExp(genCommand(context.chat.prefix, 'prefix')).test(value)) {
+                    sendCommandUsage('prefix', context.peerId, context.chat.lang, context.vk)
                 }
             }
             return ans
@@ -26,20 +24,17 @@ export default class implements ICommand {
 
     readonly handler = async (context: MContext): Promise<unknown> => {
 
-        if (context.chat.getCommandPermission('prefix') > context.chat.userGetPermission(context.senderId))
-            return
+        if (context.chat.commands['prefix'].permission > Chat.getUserFromChat(context.chat, context.senderId)!.permission)
+            return await sendError(ERRORS.NOT_ENOUGH_RIGHTS, context.peerId, context.chat.lang, context.vk)
 
         if (context.$match[1].length > 1) {
             return await context.send('Длинна префикса не может превышать один символ')
         }
 
-        context.chat.setPrefix(context.$match[1])
+        context.chat.prefix = context.$match[1]
+        context.chat.markModified('commands')
         context.chat.save()
         await context.send(`Префикс успешно изменён на ${context.$match[1]}`)
     };
-
-    constructor(hearManager: HearManager<MContext>) {
-        hearManager.hear(this.hears, this.handler)
-    }
 
 }

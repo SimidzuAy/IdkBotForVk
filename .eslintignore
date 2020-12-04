@@ -4,3 +4,4 @@ package-lock.json
 tsconfig.json
 config/
 node_modules/
+src/loadCommands.js

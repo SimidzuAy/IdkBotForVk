@@ -1,5 +1,4 @@
 {
-  "token": "",
-  "payload": "TsBot",
-  "getUserReg": "(?:\\[(\\S+?)\\|(?:.+?)]|(?:http(?:s|):\\/\\/|)vk\\.com\\/(.+))"
+    "token": "",
+    "payload": "githubVkBot"
 }

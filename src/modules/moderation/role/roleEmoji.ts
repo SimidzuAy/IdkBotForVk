@@ -1,7 +1,7 @@
-import {aliasesToCommand, isThisCommand, sendCommandUsage, sendError} from '@utils'
+import {genCommand, isThisCommand, sendCommandUsage, sendError} from '@utils'
 import ICommand from '@command'
-import {commands, ERRORS, MContext} from '@types'
-import {HearManager} from '@vk-io/hear'
+import {ERRORS, MContext} from '@types'
+import Chat from '@class/Chat'
 
 const emojiReg = new RegExp('[\\u{1f300}-\\u{1f5ff}\\u{1f900}-\\u{1f9ff}\\u{1f600}-\\u{1f64f}\\u{1f680}-\\u{1f6ff}\\u{2600}-' +
     '\\u{26ff}\\u{2700}-\\u{27bf}\\u{1f1e6}-\\u{1f1ff}\\u{1f191}-\\u{1f251}\\u{1f004}\\u{1f0cf}\\u{1f170}-\\u{1f171}' +
@@ -11,19 +11,17 @@ const emojiReg = new RegExp('[\\u{1f300}-\\u{1f5ff}\\u{1f900}-\\u{1f9ff}\\u{1f60
 
 export default class implements ICommand {
 
-    readonly PATH: string = __filename;
-
     readonly hears: any[] = [
         (value: string, context: MContext): boolean => {
             const regExps = [
-                new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.roleEmoji.aliases)} (\\d{1,3}) (.+)`, 'i')
+                new RegExp(`${genCommand(context.chat.prefix, 'roleEmoji')} (\\d{1,3}) (.+)`, 'i')
             ]
 
             const ans = isThisCommand(value, context, regExps)
 
             if ( !ans ) {
-                if (new RegExp(`^${context.chat.getPrefix()}\\s*${aliasesToCommand(commands.roleEmoji.aliases)}`).test(value)) {
-                    sendCommandUsage('roleEmoji', context.peerId, context.chat.getLang(), context.vk)
+                if (new RegExp(genCommand(context.chat.prefix, 'roleEmoji')).test(value)) {
+                    sendCommandUsage('roleEmoji', context.peerId, context.chat.lang, context.vk)
                 }
             }
             return ans
@@ -32,29 +30,25 @@ export default class implements ICommand {
 
     readonly handler = async (context: MContext): Promise<unknown> => {
 
-        if (context.chat.getCommandPermission('roleEmoji') > context.chat.userGetPermission(context.senderId))
-            return
+        if (context.chat.commands['roleEmoji'].permission > Chat.getUserFromChat(context.chat, context.senderId)!.permission)
+            return await sendError(ERRORS.NOT_ENOUGH_RIGHTS, context.peerId, context.chat.lang, context.vk)
 
         if (!emojiReg.test(context.$match[2]))
-            return await context.send('Я хуй знает что тут написать, неверное emoji')
+            return await context.send('Неверное emoji')
 
-        const right = context.chat.chatGetRights().find(x => x.permission === Number(context.$match[1]))
+        const right = context.chat.rights.find(x => x.permission === Number(context.$match[1]))
         const emoji = context.$match[2].match(emojiReg)![0]
 
         if (!right)
-            return await sendError(ERRORS.ROLE_DOESNT_CREATED, context.peerId, context.chat.getLang(), context.vk)
+            return await sendError(ERRORS.ROLE_DOESNT_CREATED, context.peerId, context.chat.lang, context.vk)
 
-        context.chat.roleSetEmoji(Number(context.$match[1]), emoji)
+        context.chat.rights.find(x => x.permission === Number(context.$match[1]))!.emoji = emoji
+
         context.chat.save()
         await context.send([
             `Emoji роли с названием ${right.name} успешно измененно!`,
             `Emoji role with name ${right.name} has been changed`
-        ][context.chat.getLang()])
+        ][context.chat.lang])
 
     };
-
-    constructor(hearManager: HearManager<MContext>) {
-        hearManager.hear(this.hears, this.handler)
-    }
-
 }

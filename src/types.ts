@@ -1,6 +1,6 @@
 import {MessageContext, VK} from 'vk-io'
-import User from './classes/User'
-import Chat from './classes/Chat'
+import {ExtractDoc} from 'ts-mongoose'
+import {chatSchema, userSchema} from './database'
 
 export enum ERRORS {
     USER_NOT_FOUND,
@@ -28,10 +28,12 @@ export enum LANG {
     ENGLISH
 }
 
+export type hear = (value: string, context: MContext) => boolean
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface MContext extends MessageContext {
-    user: User,
-    chat: Chat,
+    user: ExtractDoc<typeof userSchema>
+    chat: ExtractDoc<typeof chatSchema>
     vk: VK
 }
 
