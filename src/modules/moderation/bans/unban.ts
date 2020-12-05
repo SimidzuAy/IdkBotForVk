@@ -37,7 +37,6 @@ export default class implements ICommand {
         if (id) {
             if (context.chat.bans.find(x => x.bannedId === id)) {
                 context.chat.bans = context.chat.bans.filter(x => x.bannedId !== id)
-                context.chat.save()
                 await context.send(`Пользователь @id${id} успешно разбанен!`)
             } else
                 return await sendError(ERRORS.USER_ARE_NOT_BANNED, context.peerId, context.chat.lang, context.vk)

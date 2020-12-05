@@ -1,5 +1,6 @@
 import {createSchema, Type, typedModel} from 'ts-mongoose'
 import {RIGHTS} from '@types'
+import {Stat} from './types'
 
 export const userSchema = createSchema({
     vkId: Type.number({
@@ -12,8 +13,8 @@ export const userSchema = createSchema({
         required: false
     })),
     fullName: Type.string({required: true}),
-    sex: Type.number({ required: true })
-
+    sex: Type.number({ required: true }),
+    stat: Stat
 })
 
 export const userModel = typedModel('User', userSchema, undefined, undefined, {

@@ -1,12 +1,29 @@
 import {chatModel, chatSchema} from '../database'
 import {ExtractDoc} from 'ts-mongoose'
 import {MessagesConversationMember} from 'vk-io/lib/api/schemas/objects'
-import {commandsName, LANG} from '@types'
+import {IStat, LANG} from '@types'
 
 interface IUserInChat {
     userId:     number
     permission: number
     inChat:     boolean
+    stat:       IStat
+}
+
+
+const stat = {
+    symbols:       0,
+    audio_message: 0,
+    forwards:      0,
+    photo:         0,
+    video:         0,
+    audio:         0,
+    doc:           0,
+    sticker:       0,
+    commands:      0,
+    emoji:         0,
+    wall:          0,
+    messages:      0
 }
 
 
@@ -36,21 +53,24 @@ export default class {
             users.push({
                 userId: ownerId!.member_id,
                 permission: 100,
-                inChat: true
+                inChat: true,
+                stat
             })
 
             this.users.filter(x => x.is_admin && !x.is_owner).forEach(admin => {
                 users.push({
                     userId: admin.member_id,
                     permission: 80,
-                    inChat: true
+                    inChat: true,
+                    stat
                 })
             })
             this.users.filter(x => !x.is_admin).forEach(user => {
                 users.push({
                     userId: user.member_id,
                     permission: 0,
-                    inChat: true
+                    inChat: true,
+                    stat
                 })
             })
 
@@ -96,7 +116,8 @@ export default class {
                     ping: {permission: 0}
                 },
                 prefix: '!',
-                bans: []
+                bans: [],
+                stat
             })
         }
 
@@ -116,17 +137,12 @@ export default class {
             chat.users.push({
                 userId,
                 permission: 0,
-                inChat: true
+                inChat: true,
+                stat
             })
 
         else
             chat.users![userIndex].inChat = true
-    }
-
-    chatSetCommandPermission(command: commandsName, permission: number): void {
-        this.chat.commands[command].permission = permission
-
-        this.chat.markModified('commands')
     }
 
 

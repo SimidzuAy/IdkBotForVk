@@ -57,6 +57,5 @@ export default class implements ICommand {
         context.chat.commands[commandInDb].permission = rightLevel
 
         context.chat.markModified('commands')
-        context.chat.save()
     };
 }

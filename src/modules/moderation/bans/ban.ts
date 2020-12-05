@@ -48,8 +48,6 @@ export default class implements ICommand {
                 })
 
                 Chat.removeUserFromChat(context.chat, id)
-
-                context.chat.save()
             } else {
                 sendCommandUsage('ban', context.peerId, context.chat.lang, context.vk)
             }

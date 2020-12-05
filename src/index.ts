@@ -9,6 +9,8 @@ import {DB} from './database'
 import Chat from '@class/Chat'
 import Logger from '@class/Logger'
 import {checkUserIsBanned} from '@utils'
+import {Stat} from './database/types'
+
 
 const vk: VK = new VK({
     token: cfg.token,
@@ -83,9 +85,6 @@ vk.updates.on(['message_new'], async (context: MContext, next) => {
 
     if ( await checkUserIsBanned(context) ) return
 
-    if (!Chat.getUserFromChat(context.chat, context.senderId)!.inChat)
-        Chat.newChatUser(context.chat, context.senderId)
-
     await next()
 
 })
@@ -93,11 +92,45 @@ vk.updates.on(['message_new'], async (context: MContext, next) => {
 vk.updates.on(['message_new'], async (context: MContext, next) => {
     try {
         await hearManager.middleware(context, next)
+
+        if (!Chat.getUserFromChat(context.chat, context.senderId)!.inChat)
+            Chat.newChatUser(context.chat, context.senderId)
+
+        context.user.stat.commands += 1
+        context.user.stat.messages += 1
+        context.user.stat.symbols  += context.text ? context.text.length : 0
+
+        Chat.getUserFromChat(context.chat, context.senderId)!.stat.commands += 1
+        Chat.getUserFromChat(context.chat, context.senderId)!.stat.messages += 1
+        Chat.getUserFromChat(context.chat, context.senderId)!.stat.symbols  += context.text ? context.text.length : 0
+
+        context.chat.stat.messages += 1
+        context.chat.stat.commands += 1
+        context.chat.stat.symbols  += context.text ? context.text.length : 0
+
+        context.attachments.forEach(attach => {
+            if ( ['audio_message', 'photo', 'video', 'audio', 'doc', 'sticker', 'wall'].includes(attach.type) ) {
+                context.user.stat[attach.type as keyof typeof Stat] += 1
+                context.chat.stat[attach.type as keyof typeof Stat] += 1
+                Chat.getUserFromChat(context.chat, context.senderId)!.stat[attach.type as keyof typeof Stat] += 1
+            }
+        })
+
     } catch (error) {
         await context.reply('Произошла ошибка: ' + error.message)
         logger.error(error.message)
         throw error
     }
+
+    context.user.markModified('stat')
+    context.chat.markModified('stat')
+    context.chat.markModified('users')
+
+    await Promise.all([
+        context.user.save(),
+        context.chat.save()
+    ])
+
 })
 
 
@@ -129,8 +162,14 @@ vk.updates.on(['chat_kick_user'], async (context: MContext) => {
 loadCommands(hearManager, logger)
 
 hearManager.onFallback(async context => {
+
+    context.user.stat.commands -= 1
+
     if (!context.isChat)
         return await context.reply('Команда не найдена')
+
+    context.chat.stat.commands -= 1
+    Chat.getUserFromChat(context.chat, context.senderId)!.stat.commands -= 1
 })
 
 

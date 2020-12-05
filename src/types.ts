@@ -1,6 +1,7 @@
 import {MessageContext, VK} from 'vk-io'
 import {ExtractDoc} from 'ts-mongoose'
 import {chatSchema, userSchema} from './database'
+import {Stat} from './database/types'
 
 export enum ERRORS {
     USER_NOT_FOUND,
@@ -13,6 +14,10 @@ export enum ERRORS {
     USER_HAVE_BIGGER_RIGHT,
     UNKNOWN_COMMAND,
     TOO_BIG_SMALL_RIGHT_LEVEL
+}
+
+export type IStat = {
+    [key in keyof typeof Stat]: number
 }
 
 export const getUserReg = '(?:\\[(\\S+?)\\|(?:.+?)]|(?:http(?:s|):\\/\\/|)vk\\.com\\/(.+))'

@@ -1,5 +1,6 @@
 import {createSchema, Type, typedModel} from 'ts-mongoose'
 import {LANG} from '@types'
+import { Stat } from './types'
 
 const command = Type.object({ required: true}).of({
     permission: Type.number({
@@ -22,7 +23,6 @@ export const chatSchema = createSchema({
         to: Type.number({required: false, default: -1})
     }),
     prefix: Type.string({
-        default: '!',
         required: true
     }),
     lang: Type.number({
@@ -32,10 +32,10 @@ export const chatSchema = createSchema({
     users: Type.array({ required: true }).of({
         userId: Type.number({required: true}),
         permission: Type.number({required: true, max: 100, min: -100}),
-        inChat: Type.boolean({required: true})
+        inChat: Type.boolean({required: true}),
+        stat: Stat
     }),
     rights: Type.array({
-        default: [],
         required: true
     }).of({
         name: Type.string({required: true}),
@@ -55,7 +55,8 @@ export const chatSchema = createSchema({
         getAdminList: command,
         ping: command,
         myRole: command
-    })
+    }),
+    stat: Stat
 })
 
 export const chatModel = typedModel('Chat', chatSchema, undefined, undefined, {

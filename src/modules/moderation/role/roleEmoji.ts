@@ -44,7 +44,6 @@ export default class implements ICommand {
 
         context.chat.rights.find(x => x.permission === Number(context.$match[1]))!.emoji = emoji
 
-        context.chat.save()
         await context.send([
             `Emoji роли с названием ${right.name} успешно измененно!`,
             `Emoji role with name ${right.name} has been changed`

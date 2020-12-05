@@ -33,7 +33,6 @@ export default class implements ICommand {
 
         context.chat.prefix = context.$match[1]
         context.chat.markModified('commands')
-        context.chat.save()
         await context.send(`Префикс успешно изменён на ${context.$match[1]}`)
     };
 

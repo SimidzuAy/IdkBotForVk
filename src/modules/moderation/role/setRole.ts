@@ -57,7 +57,6 @@ export default class implements ICommand {
             return await sendError(ERRORS.ROLE_DOESNT_CREATED, context.peerId, context.chat.lang, context.vk)
 
         Chat.getUserFromChat(context.chat, id)!.permission = permission
-        context.chat.save()
 
         await context.send(['Уровень прав успешно изменён!', 'Permission level successfully changed!'][context.chat.lang])
 

@@ -3,6 +3,21 @@ import {userModel, userSchema} from '../database'
 import {ExtractDoc} from 'ts-mongoose'
 import {VK} from 'vk-io'
 
+const stat = {
+    symbols:       0,
+    audio_message: 0,
+    forwards:      0,
+    photo:         0,
+    video:         0,
+    audio:         0,
+    doc:           0,
+    sticker:       0,
+    commands:      0,
+    emoji:         0,
+    wall:          0,
+    messages:      0
+}
+
 export default class User {
     private readonly vkId: number;
     private user!: ExtractDoc<typeof userSchema>;
@@ -31,7 +46,8 @@ export default class User {
                     fullName: fullName,
                     vkId: id,
                     sex: _user.sex,
-                    right: [RIGHTS.USER]
+                    right: [RIGHTS.USER],
+                    stat
                 })
             }
         }
@@ -54,7 +70,8 @@ export default class User {
                     fullName: fullName,
                     sex: _user.sex,
                     vkId: this.vkId,
-                    right: [RIGHTS.USER]
+                    right: [RIGHTS.USER],
+                    stat
                 })
 
             }

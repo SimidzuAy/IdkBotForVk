@@ -35,7 +35,6 @@ export default class implements ICommand {
                 permission: num,
                 emoji: ''
             })
-            context.chat.save()
             await context.send('Ну создал и чё.')
         } else {
             await sendError(ERRORS.TOO_BIG_SMALL_RIGHT_LEVEL, context.peerId, context.chat.lang, context.vk)
