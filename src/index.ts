@@ -4,7 +4,7 @@ import {HearManager} from '@vk-io/hear'
 import loadCommands from './loadCommands'
 import User from '@class/User'
 import cfg from '@config'
-import {MContext} from '@types'
+import {emojiReg, MContext} from '@types'
 import {DB} from './database'
 import Chat from '@class/Chat'
 import Logger from '@class/Logger'
@@ -96,17 +96,32 @@ vk.updates.on(['message_new'], async (context: MContext, next) => {
         if (!Chat.getUserFromChat(context.chat, context.senderId)!.inChat)
             Chat.newChatUser(context.chat, context.senderId)
 
+        // Мега костыль, уберите детей от экранов
+
+        const match = context.text?.match(emojiReg)
+
+        const emojiLen: number = match ? match.length : 0
+
+
+        // Немного статистики никому не помешает =)
+
         context.user.stat.commands += 1
         context.user.stat.messages += 1
         context.user.stat.symbols  += context.text ? context.text.length : 0
+        context.user.stat.forwards += context.forwards.length
+        context.user.stat.emoji    += emojiLen
 
         Chat.getUserFromChat(context.chat, context.senderId)!.stat.commands += 1
         Chat.getUserFromChat(context.chat, context.senderId)!.stat.messages += 1
         Chat.getUserFromChat(context.chat, context.senderId)!.stat.symbols  += context.text ? context.text.length : 0
+        Chat.getUserFromChat(context.chat, context.senderId)!.stat.forwards += context.forwards.length
+        Chat.getUserFromChat(context.chat, context.senderId)!.stat.emoji    += emojiLen
 
         context.chat.stat.messages += 1
         context.chat.stat.commands += 1
         context.chat.stat.symbols  += context.text ? context.text.length : 0
+        context.chat.stat.forwards += context.forwards.length
+        context.chat.stat.emoji    += emojiLen
 
         context.attachments.forEach(attach => {
             if ( ['audio_message', 'photo', 'video', 'audio', 'doc', 'sticker', 'wall'].includes(attach.type) ) {
@@ -115,6 +130,7 @@ vk.updates.on(['message_new'], async (context: MContext, next) => {
                 Chat.getUserFromChat(context.chat, context.senderId)!.stat[attach.type as keyof typeof Stat] += 1
             }
         })
+
 
     } catch (error) {
         await context.reply('Произошла ошибка: ' + error.message)
