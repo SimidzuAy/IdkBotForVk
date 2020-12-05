@@ -110,7 +110,7 @@ vk.updates.on(['message_new'], async (context: MContext, next) => {
         context.user.stat.symbols  += context.text ? context.text.length : 0
         context.user.stat.forwards += context.forwards.length
         context.user.stat.emoji    += emojiLen
-
+        
         Chat.getUserFromChat(context.chat, context.senderId)!.stat.commands += 1
         Chat.getUserFromChat(context.chat, context.senderId)!.stat.messages += 1
         Chat.getUserFromChat(context.chat, context.senderId)!.stat.symbols  += context.text ? context.text.length : 0

@@ -131,7 +131,7 @@ export default class {
         chat: ExtractDoc<typeof chatSchema>,
         user: ExtractDoc<typeof userSchema>
     }): boolean {
-        return chat.commands[command].permission < this.getUserFromChat(chat, user.vkId)!.permission
+        return chat.commands[command].permission <= this.getUserFromChat(chat, user.vkId)!.permission
     }
 
 
