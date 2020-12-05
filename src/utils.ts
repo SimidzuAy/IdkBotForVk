@@ -1,6 +1,5 @@
 import {MessageContext, VK} from 'vk-io'
-import {ERRORS, LANG, MContext, commands, commandsName} from './types'
-import cfg from './config'
+import {MContext, commands, commandsName} from './types'
 
 type NameCases = 'nom' | 'gen' | 'dat' | 'acc' | 'ins' | 'abl' | undefined;
 
@@ -52,14 +51,6 @@ export function getIdFromReply(context: MContext): number | null {
 
 }
 
-export async function sendError(errorCode: ERRORS, peerId: number, lang: LANG, vk: VK): Promise<void> {
-    await vk.api.messages.send({
-        message: `${cfg.errors[ERRORS[errorCode]][lang]}\n${['Код ошибки: ', 'Error code: '][lang]} ${errorCode} (${ERRORS[errorCode]})`,
-        random_id: 0,
-        peer_id: peerId
-    })
-}
-
 export function isThisCommand(value: string, context: MContext, regExps: RegExp[]): boolean {
 
     if (!value) return false
@@ -85,27 +76,6 @@ export function aliasesToCommand(aliases: string[]): string {
     })
 
     return `(?:${string.substring(0, string.length - 1)})`
-}
-
-export function sendCommandUsage(command: commandsName, peerId: number, lang: LANG, vk: VK): void {
-
-    let usages = ''
-
-    if ( commands[command].usages ) {
-        commands[command].usages[lang].forEach(usage => {
-            usages += `${usage}\n`
-        })
-    }
-
-    vk.api.messages.send({
-        random_id: 0,
-        peer_id: peerId,
-        message: [
-            `Использование комманды ${command}:\n${usages}`,
-            `Usage of the command: ${command}:\n${usages}`
-        ][lang]
-    }).then()
-
 }
 
 export async function checkUserIsBanned(context: MContext): Promise<boolean> {

@@ -1,11 +1,11 @@
-import {genCommand, isThisCommand, sendCommandUsage, sendError} from '@utils'
+import {genCommand, isThisCommand} from '@utils'
 import ICommand from '@command'
-import {emojiReg, ERRORS, MContext} from '@types'
+import {emojiReg, ERRORS, hear, MContext} from '@types'
 import Chat from '@class/Chat'
 
 export default class implements ICommand {
 
-    readonly hears: any[] = [
+    readonly hears: hear[] = [
         (value: string, context: MContext): boolean => {
             const regExps = [
                 new RegExp(`${genCommand(context.chat.prefix, 'roleEmoji')} (\\d{1,3}) (.+)`, 'i')
@@ -15,7 +15,7 @@ export default class implements ICommand {
 
             if ( !ans ) {
                 if (new RegExp(genCommand(context.chat.prefix, 'roleEmoji')).test(value)) {
-                    sendCommandUsage('roleEmoji', context.peerId, context.chat.lang, context.vk)
+                    Chat.sendCommandUsage('roleEmoji', context).then()
                 }
             }
             return ans
@@ -24,8 +24,8 @@ export default class implements ICommand {
 
     readonly handler = async (context: MContext): Promise<unknown> => {
 
-        if (context.chat.commands['roleEmoji'].permission > Chat.getUserFromChat(context.chat, context.senderId)!.permission)
-            return await sendError(ERRORS.NOT_ENOUGH_RIGHTS, context.peerId, context.chat.lang, context.vk)
+        if (!Chat.isEnoughPermission('roleEmoji', context))
+            return await Chat.sendError(ERRORS.NOT_ENOUGH_RIGHTS, context)
 
         if (!emojiReg.test(context.$match[2]))
             return await context.send('Неверное emoji')
@@ -34,7 +34,7 @@ export default class implements ICommand {
         const emoji = context.$match[2].match(emojiReg)![0]
 
         if (!right)
-            return await sendError(ERRORS.ROLE_DOESNT_CREATED, context.peerId, context.chat.lang, context.vk)
+            return await Chat.sendError(ERRORS.ROLE_DOESNT_CREATED, context)
 
         context.chat.rights.find(x => x.permission === Number(context.$match[1]))!.emoji = emoji
 

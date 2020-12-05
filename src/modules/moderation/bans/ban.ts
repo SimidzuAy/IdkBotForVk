@@ -3,8 +3,7 @@ import {
     getIdByMatch,
     getIdFromReply,
     isThisCommand,
-    sendError,
-    sendCommandUsage, genCommand
+    genCommand
 } from '@utils'
 import ICommand from '@command'
 import Chat from '@class/Chat'
@@ -24,15 +23,15 @@ export default class implements ICommand {
 
     readonly handler = async (context: MContext): Promise<void> => {
 
-        if (context.chat.commands['ban'].permission > Chat.getUserFromChat(context.chat, context.senderId)!.permission)
-            return await sendError(ERRORS.NOT_ENOUGH_RIGHTS, context.peerId, context.chat.lang, context.vk)
+        if (!Chat.isEnoughPermission('ban', context))
+            return await Chat.sendError(ERRORS.NOT_ENOUGH_RIGHTS, context)
 
         try {
             const id: number | null = await getIdByMatch(context.vk, [context.$match[1], context.$match[2]]) ||
                 await getIdFromReply(context)
 
             if (id === context.senderId)
-                return await sendError(ERRORS.USE_AT_YOURSELF, context.peerId, context.chat.lang, context.vk)
+                return await Chat.sendError(ERRORS.USE_AT_YOURSELF, context)
 
             if (id) {
                 await context.vk.api.messages.removeChatUser({
@@ -49,11 +48,11 @@ export default class implements ICommand {
 
                 Chat.removeUserFromChat(context.chat, id)
             } else {
-                sendCommandUsage('ban', context.peerId, context.chat.lang, context.vk)
+                await Chat.sendCommandUsage('ban', context)
             }
 
         } catch (err) {
-            await sendError(ERRORS.IN_KICK_USER, context.peerId, context.chat.lang, context.vk)
+            await Chat.sendError(ERRORS.IN_KICK_USER, context)
         }
     };
 

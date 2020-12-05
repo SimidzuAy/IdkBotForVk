@@ -1,7 +1,7 @@
 import {MessageContext, VK} from 'vk-io'
 import {ExtractDoc} from 'ts-mongoose'
 import {chatSchema, userSchema} from './database'
-import {Stat} from './database/types'
+import {Commands, Stat} from './database/types'
 
 export enum ERRORS {
     USER_NOT_FOUND,
@@ -46,14 +46,14 @@ export interface MContext extends MessageContext {
     chat: ExtractDoc<typeof chatSchema>
     vk: VK
 }
-
-export const commands = {
+export const commands: {
+    [key in keyof typeof Commands]: {
+        aliases: string[],
+        usages: string[][]
+    }
+} = {
     ban: {
-        aliases: [
-            'бан',
-            'ban',
-            'заблокировать'
-        ],
+        aliases: ['бан', 'ban', 'заблокировать'],
         usages: [[
             '!ban @user',
             '!ban vk.com/user',
@@ -66,12 +66,7 @@ export const commands = {
 
     },
     unBan: {
-        aliases: [
-            'разбан',
-            'анбан',
-            'unban',
-            'разблокировать'
-        ],
+        aliases: ['разбан', 'анбан', 'unban', 'разблокировать'],
         usages: [[
             '!unban @user',
             '!unban vk.com/user',
@@ -83,10 +78,7 @@ export const commands = {
         ]]
     },
     prefix: {
-        aliases: [
-            'prefix',
-            'префикс'
-        ],
+        aliases: ['prefix', 'префикс'],
         usages: [[
             '!префикс *символ*'
         ], [
@@ -94,10 +86,7 @@ export const commands = {
         ]]
     },
     createRole: {
-        aliases: [
-            'создать роль',
-            'create role'
-        ],
+        aliases: ['создать роль', 'create role'],
         usages: [[
             '!создать роль *название* *уровень прав*'
         ], [
@@ -105,11 +94,7 @@ export const commands = {
         ]]
     },
     changeRoleRight: {
-        aliases: [
-            'right',
-            'permission',
-            'право'
-        ],
+        aliases: ['right', 'permission', 'право'],
         usages: [[
             '!право *команда* *уровень прав*'
         ], [
@@ -117,11 +102,7 @@ export const commands = {
         ]]
     },
     roleEmoji: {
-        aliases: [
-            'emoji',
-            'емоджи',
-            'эмоджи'
-        ],
+        aliases: ['emoji', 'емоджи', 'эмоджи'],
         usages: [[
             '!емоджи *уровень прав* *эмоджи*'
         ], [
@@ -129,10 +110,7 @@ export const commands = {
         ]]
     },
     setRole: {
-        aliases: [
-            'роль',
-            'role'
-        ],
+        aliases: ['роль', 'role'],
         usages: [[
             '!роль @user *уровень прав*',
             '!роль *уровень прав* - на ответ',
@@ -142,31 +120,22 @@ export const commands = {
         ]]
     },
     myRole: {
-        aliases: [
-            'роль',
-            'моя\\s*роль',
-            'role',
-            'my\\s*role'
-        ],
+        aliases: ['роль', 'моя\\s*роль', 'role', 'my\\s*role'],
         usages: [['!роль'], ['!role']]
     },
     getAdminList: {
-        aliases: [
-            'админы',
-            'администраторы',
-            'управляющие',
-            'admins'
-        ],
+        aliases: ['админы', 'администраторы', 'управляющие', 'admins'],
         usages: [['!админы'], ['!admins']]
     },
     ping: {
-        aliases: [
-            'ping',
-            'пинг'
-        ],
+        aliases: ['ping', 'пинг'],
         usages: [['!пинг'], ['!ping']]
+    },
+    statInChat: {
+        aliases: ['моястата', 'стата', 'stat', 'statistic'],
+        usages: [['!стата', '!statistic']]
     }
 
 }
 
-export type commandsName = keyof typeof commands
+export type commandsName = keyof typeof Commands

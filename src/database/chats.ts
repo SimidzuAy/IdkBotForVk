@@ -1,15 +1,6 @@
 import {createSchema, Type, typedModel} from 'ts-mongoose'
 import {LANG} from '@types'
-import { Stat } from './types'
-
-const command = Type.object({ required: true}).of({
-    permission: Type.number({
-        max: 100,
-        min: -100,
-        required: true
-    })
-})
-
+import {Commands, Stat} from './types'
 
 export const chatSchema = createSchema({
     peerId: Type.number({
@@ -42,20 +33,7 @@ export const chatSchema = createSchema({
         permission: Type.number({required: true, max: 100, min: -100}),
         emoji: Type.string({required: false, default: ''})
     }),
-    commands: Type.object({
-        required: true
-    }).of({
-        ban: command,
-        unBan: command,
-        prefix: command,
-        createRole: command,
-        changeRoleRight: command,
-        roleEmoji: command,
-        setRole: command,
-        getAdminList: command,
-        ping: command,
-        myRole: command
-    }),
+    commands: Commands,
     stat: Stat
 })
 

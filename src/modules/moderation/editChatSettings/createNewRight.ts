@@ -1,11 +1,11 @@
 import ICommand from '@command'
-import {ERRORS, MContext} from '@types'
-import {genCommand, isThisCommand, sendCommandUsage, sendError} from '@utils'
+import {ERRORS, hear, MContext} from '@types'
+import {genCommand, isThisCommand} from '@utils'
 import Chat from '@class/Chat'
 
 export default class implements ICommand {
 
-    readonly hears: any[] = [
+    readonly hears: hear[] = [
         (value: string, context: MContext): boolean => {
             const regExps = [
                 new RegExp(`${genCommand(context.chat.prefix, 'createRole')}\\s+(.+)\\s+(\\d{1,3})$`, 'i')
@@ -15,7 +15,7 @@ export default class implements ICommand {
 
             if ( !ans ) {
                 if (new RegExp(genCommand(context.chat.prefix, 'createRole')).test(value)) {
-                    sendCommandUsage('createRole', context.peerId, context.chat.lang, context.vk)
+                    Chat.sendCommandUsage('createRole', context).then()
                 }
             }
             return ans
@@ -24,8 +24,8 @@ export default class implements ICommand {
 
     readonly handler = async (context: MContext): Promise<unknown> => {
 
-        if (context.chat.commands['createRole'].permission > Chat.getUserFromChat(context.chat, context.senderId)!.permission)
-            return await sendError(ERRORS.NOT_ENOUGH_RIGHTS, context.peerId, context.chat.lang, context.vk)
+        if (!Chat.isEnoughPermission('createRole', context))
+            return await Chat.sendError(ERRORS.NOT_ENOUGH_RIGHTS, context)
 
         const num = Number(context.$match[2])
 
@@ -37,7 +37,7 @@ export default class implements ICommand {
             })
             await context.send('Ну создал и чё.')
         } else {
-            await sendError(ERRORS.TOO_BIG_SMALL_RIGHT_LEVEL, context.peerId, context.chat.lang, context.vk)
+            await Chat.sendError(ERRORS.TOO_BIG_SMALL_RIGHT_LEVEL, context)
         }
 
     };

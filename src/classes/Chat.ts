@@ -1,7 +1,9 @@
-import {chatModel, chatSchema} from '../database'
+import {chatModel, chatSchema, userSchema} from '../database'
 import {ExtractDoc} from 'ts-mongoose'
 import {MessagesConversationMember} from 'vk-io/lib/api/schemas/objects'
-import {IStat, LANG} from '@types'
+import {commands, commandsName, ERRORS, IStat, LANG} from '@types'
+import {VK} from 'vk-io'
+import cfg from '@config'
 
 interface IUserInChat {
     userId:     number
@@ -113,7 +115,8 @@ export default class {
                     roleEmoji: {permission: 80},
                     setRole: {permission: 80},
                     getAdminList: {permission: 0},
-                    ping: {permission: 0}
+                    ping: {permission: 0},
+                    statInChat: {permission: 0}
                 },
                 prefix: '!',
                 bans: [],
@@ -124,9 +127,11 @@ export default class {
         return this.chat
     }
 
-
-    getUser(userId: number): IUserInChat {
-        return this.chat.users!.find(x => x.userId === userId) as IUserInChat
+    static isEnoughPermission(command: commandsName, { chat, user }: {
+        chat: ExtractDoc<typeof chatSchema>,
+        user: ExtractDoc<typeof userSchema>
+    }): boolean {
+        return chat.commands[command].permission < this.getUserFromChat(chat, user.vkId)!.permission
     }
 
 
@@ -156,4 +161,42 @@ export default class {
     static getUserFromChat(chat: ExtractDoc<typeof chatSchema>, id: number): IUserInChat | undefined  {
         return chat.users.find(x => x.userId === id)
     }
+
+    static async sendError(errorCode: ERRORS, { peerId, chat, vk }: {
+        peerId: number,
+        chat: ExtractDoc<typeof chatSchema>,
+        vk: VK
+    }): Promise<void> {
+        await vk.api.messages.send({
+            message: `${cfg.errors[ERRORS[errorCode]][chat.lang]}\n${['Код ошибки: ', 'Error code: '][chat.lang]} ${errorCode} (${ERRORS[errorCode]})`,
+            random_id: 0,
+            peer_id: peerId
+        })
+    }
+
+    static async sendCommandUsage(command: commandsName, { peerId, chat, vk}: {
+        peerId: number,
+        chat: ExtractDoc<typeof chatSchema>,
+        vk: VK
+    }): Promise<void> {
+
+        let usages = ''
+
+        if ( commands[command].usages ) {
+            commands[command].usages[chat.lang].forEach(usage => {
+                usages += `${usage}\n`
+            })
+        }
+
+        await vk.api.messages.send({
+            random_id: 0,
+            peer_id: peerId,
+            message: [
+                `Использование комманды ${command}:\n${usages}`,
+                `Usage of the command: ${command}:\n${usages}`
+            ][chat.lang]
+        })
+
+    }
+
 }

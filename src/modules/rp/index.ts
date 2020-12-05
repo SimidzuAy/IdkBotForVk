@@ -1,11 +1,12 @@
 import ICommand from '@command'
-import {ERRORS, MContext, getUserReg} from '@types'
+import {ERRORS, MContext, getUserReg, hear} from '@types'
 import cfg from '@config'
 import {Keyboard} from 'vk-io'
-import {getFullNameById, getIdByMatch, getIdFromReply, isThisCommand, sendError} from '@utils'
+import {getFullNameById, getIdByMatch, getIdFromReply, isThisCommand} from '@utils'
+import Chat from '@class/Chat'
 
 export default class implements ICommand {
-    readonly hears: any[] = [
+    readonly hears: hear[] = [
         (value: string, context: MContext): boolean => {
             const regExps = [
                 new RegExp(`^${context.chat.prefix}\\s*(.+)\\s+${getUserReg}`, 'i'),
@@ -40,6 +41,8 @@ export default class implements ICommand {
 
         let check = false
 
+        // Т.к рп ловит все команды - проверяем существует ли данное рп
+        // Если нет, то проверяем следущую команду
         for (const key in cfg.rp) {
             if (key === context.$match[1].toLowerCase()) {
                 check = true
@@ -70,7 +73,7 @@ export default class implements ICommand {
             })).items
 
             if (!inChat.find(x => x.member_id === id))
-                return await sendError(ERRORS.USER_NOT_FOUND, context.peerId, context.chat.lang, context.vk)
+                return await Chat.sendError(ERRORS.USER_NOT_FOUND, context)
 
             const names = [
                 `[id${context.senderId}|${context.user.fullName}]`,

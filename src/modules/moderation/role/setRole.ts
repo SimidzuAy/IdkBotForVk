@@ -1,11 +1,11 @@
 import ICommand from '@command'
-import {ERRORS, MContext, getUserReg} from '@types'
-import {genCommand, getIdByMatch, getIdFromReply, isThisCommand, sendError} from '@utils'
+import {ERRORS, MContext, getUserReg, hear} from '@types'
+import {genCommand, getIdByMatch, getIdFromReply, isThisCommand} from '@utils'
 import Chat from '@class/Chat'
 
 export default class implements ICommand {
 
-    readonly hears: any[] = [
+    readonly hears: hear[] = [
         (value: string, context: MContext): boolean => {
 
             const regExps = [
@@ -14,7 +14,7 @@ export default class implements ICommand {
                 new RegExp(genCommand(context.chat.prefix, 'myRole'), 'i')
             ]
 
-            return  isThisCommand(value, context, regExps)
+            return isThisCommand(value, context, regExps)
         }
     ];
 
@@ -22,7 +22,7 @@ export default class implements ICommand {
         const id = await getIdFromReply(context) ||
             await getIdByMatch(context.vk, [context.$match[1], context.$match[2]])
 
-        if (!id) {
+        if (!id || !Chat.isEnoughPermission('setRole', context)) {
             const userPermission = Chat.getUserFromChat(context.chat, context.senderId)!.permission
             const name = context.chat.rights.find(x => x.permission === userPermission)!.name
 
@@ -39,13 +39,13 @@ export default class implements ICommand {
         }
 
         if (id === context.senderId)
-            return await sendError(ERRORS.USE_AT_YOURSELF, context.peerId, context.chat.lang, context.vk)
+            return await Chat.sendError(ERRORS.USE_AT_YOURSELF, context)
 
         if (!Chat.getUserFromChat(context.chat, id))
-            return await sendError(ERRORS.USER_ARE_NOT_IN_THE_CHAT, context.peerId, context.chat.lang, context.vk)
+            return await Chat.sendError(ERRORS.USER_ARE_NOT_IN_THE_CHAT, context)
 
         if (thisUser.permission <= Chat.getUserFromChat(context.chat, id)!.permission)
-            return await sendError(ERRORS.USER_HAVE_BIGGER_RIGHT, context.peerId, context.chat.lang, context.vk)
+            return await Chat.sendError(ERRORS.USER_HAVE_BIGGER_RIGHT, context)
 
         if (thisUser.permission <= permission)
             return await context.send([
@@ -54,7 +54,7 @@ export default class implements ICommand {
             ][context.chat.lang])
 
         if (!context.chat.rights.find(x => x.permission === permission))
-            return await sendError(ERRORS.ROLE_DOESNT_CREATED, context.peerId, context.chat.lang, context.vk)
+            return await Chat.sendError(ERRORS.ROLE_DOESNT_CREATED, context)
 
         Chat.getUserFromChat(context.chat, id)!.permission = permission
 

@@ -1,11 +1,11 @@
 import ICommand from '@command'
-import {MContext} from '@types'
+import {ERRORS, hear, MContext} from '@types'
 import {genCommand, isThisCommand} from '@utils'
 import Chat from '@class/Chat'
 import User from '@class/User'
 
 export default class implements ICommand {
-    readonly hears: any[] = [
+    readonly hears: hear[] = [
         (value: string, context: MContext): boolean => {
             const regExps = [
                 new RegExp(genCommand(context.chat.prefix, 'getAdminList'), 'i')
@@ -17,8 +17,8 @@ export default class implements ICommand {
 
     readonly handler = async (context: MContext): Promise<unknown> => {
 
-        if (context.chat.commands['getAdminList'].permission > Chat.getUserFromChat(context.chat, context.senderId)!.permission)
-            return
+        if (!Chat.isEnoughPermission('getAdminList', context))
+            return Chat.sendError(ERRORS.NOT_ENOUGH_RIGHTS, context)
 
         const users = context.chat.users
 
@@ -32,6 +32,7 @@ export default class implements ICommand {
 
         let msg = ''
 
+        // Для каждого права проверяем есть ли пользователь с этим правом
         for (const right of rights) {
 
             if (!users.find(x => x.permission === right.permission && x.userId > 0 )
@@ -40,6 +41,7 @@ export default class implements ICommand {
 
             msg += `\n\n${right.emoji} ${right.name}:`
 
+            // Если есть админ с таким правом - получаем их полный список
             for (const admin of admins) {
                 if (right.permission === Chat.getUserFromChat(context.chat, admin.userId)!.permission) {
                     const user = await new User(admin.userId).getUser(admin.userId, context.vk)
