@@ -25,7 +25,7 @@ export default class implements ICommand {
 
         return await context.send(`
                 [id${context.senderId}|Ваша] подробная статистика во всех чатах:
-                🤖 Чатов с ботом: ${allUsersChatsLen}
+                🤖 Вы были в ${allUsersChatsLen} чатах с ботом
                 📧 Сообщений: ${prettyNum(context.user.stat.messages)}
                 🔣 Символов: ${prettyNum(context.user.stat.symbols)}
                 🎵 Голосовых: ${prettyNum(context.user.stat.audio_message)}
