@@ -55,7 +55,7 @@ async function getChat(context: MContext) {
         chat = await new Chat(context.peerId, chatInfo.items).getChat()
 
         chats.set(String(context.peerId), {
-            chat: chat,
+            chat,
             lastTime: Date.now()
         })
     } else {
@@ -101,32 +101,32 @@ vk.updates.on(['message_new'], async (context: MContext, next) => {
         const match = context.text?.match(emojiReg)
 
         const emojiLen: number = match ? match.length : 0
-
+        const text = context.text ? context.text.replace(emojiReg, '').length : 0
 
         // Немного статистики никому не помешает =)
 
         context.user.stat.commands += 1
         context.user.stat.messages += 1
-        context.user.stat.symbols  += context.text ? context.text.length : 0
+        context.user.stat.symbols  += text
         context.user.stat.forwards += context.forwards.length
         context.user.stat.emoji    += emojiLen
         
         Chat.getUserFromChat(context.chat, context.senderId)!.stat.commands += 1
         Chat.getUserFromChat(context.chat, context.senderId)!.stat.messages += 1
-        Chat.getUserFromChat(context.chat, context.senderId)!.stat.symbols  += context.text ? context.text.length : 0
+        Chat.getUserFromChat(context.chat, context.senderId)!.stat.symbols  += text
         Chat.getUserFromChat(context.chat, context.senderId)!.stat.forwards += context.forwards.length
         Chat.getUserFromChat(context.chat, context.senderId)!.stat.emoji    += emojiLen
 
         context.chat.stat.messages += 1
         context.chat.stat.commands += 1
-        context.chat.stat.symbols  += context.text ? context.text.length : 0
+        context.chat.stat.symbols  += text
         context.chat.stat.forwards += context.forwards.length
         context.chat.stat.emoji    += emojiLen
 
         context.attachments.forEach(attach => {
             if ( ['audio_message', 'photo', 'video', 'audio', 'doc', 'sticker', 'wall'].includes(attach.type) ) {
                 context.user.stat[attach.type as keyof typeof Stat] += 1
-                context.chat.stat[attach.type as keyof typeof Stat] += 1
+                context.chat.stat[attach.type as keyof typeof  Stat] += 1
                 Chat.getUserFromChat(context.chat, context.senderId)!.stat[attach.type as keyof typeof Stat] += 1
             }
         })
@@ -141,12 +141,6 @@ vk.updates.on(['message_new'], async (context: MContext, next) => {
     context.user.markModified('stat')
     context.chat.markModified('stat')
     context.chat.markModified('users')
-
-    await Promise.all([
-        context.user.save(),
-        context.chat.save()
-    ])
-
 })
 
 
@@ -191,18 +185,31 @@ hearManager.onFallback(async context => {
 
 setInterval(() => {
     users.forEach((value, key) => {
-        if (Date.now() - users.get(key).lastTime > 30000)
+        if (Date.now() - users.get(key).lastTime > 30000) {
+            users.get(key).user.save()
             users.delete(key)
+        }
     })
 }, 1000 * 60 * 5)
 
 
 setInterval(() => {
     chats.forEach((value, key) => {
-        if (Date.now() - chats.get(key).lastTime > 30000)
+        if (Date.now() - chats.get(key).lastTime > 30000) {
+            chats.get(key).chat.save()
             chats.delete(key)
+        }
     })
 }, 1000 * 60 * 15)
 
+
+setInterval(() => {
+    chats.forEach((value, key) => {
+        chats.get(key).chat.save()
+    })
+    users.forEach((value, key) => {
+        users.get(key).user.save()
+    })
+}, 5000)
 
 vk.updates.start().catch(console.error).then(() => logger.info('Бот запущен'))

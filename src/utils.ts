@@ -69,13 +69,7 @@ export function isThisCommand(value: string, context: MContext, regExps: RegExp[
 
 
 export function aliasesToCommand(aliases: string[]): string {
-    let string = ''
-
-    aliases.forEach(alias => {
-        string += `${alias}|`
-    })
-
-    return `(?:${string.substring(0, string.length - 1)})`
+    return `(?:${aliases.join('|')})`
 }
 
 export async function checkUserIsBanned(context: MContext): Promise<boolean> {
@@ -100,4 +94,33 @@ export async function checkUserIsBanned(context: MContext): Promise<boolean> {
 
 export function genCommand(prefix: string, command: commandsName): string {
     return `^${prefix}\\s*${aliasesToCommand(commands[command].aliases)}`
+}
+
+/*export function prettyNum(num: number): string | number {
+    if ( Math.abs(num) > 999 )
+        return Math.sign(num) * (Number((Math.abs(num) / 1000).toFixed(1))) + 'k'
+
+    return String(Math.sign(num) * Math.abs(num))
+
+}*/
+
+
+const ranges = [
+    { divider: 1e18 , suffix: 'QD' },
+    { divider: 1e15 , suffix: 'QD' },
+    { divider: 1e12 , suffix: 'T' },
+    { divider: 1e9  , suffix: 'B' },
+    { divider: 1e6  , suffix: 'M' },
+    { divider: 1e3  , suffix: 'K' }
+]
+
+export function prettyNum(num: number): string {
+    for (let i = 0; i < ranges.length; i++) {
+        if (num >= ranges[i].divider) {
+            const fNum = (num / ranges[i].divider).toFixed(2).toString()
+
+            return fNum.endsWith('.00') ? fNum.substring(0, fNum.length - 3) + ranges[i].suffix : fNum + ranges[i].suffix
+        }
+    }
+    return num.toString()
 }

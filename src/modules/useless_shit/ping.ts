@@ -24,10 +24,12 @@ export default class implements ICommand {
 
     readonly handler = async (context: MContext): Promise<unknown> => {
 
-        if (context.chat.commands['ping'].permission > Chat.getUserFromChat(context.chat, context.senderId)!.permission)
+        if (!Chat.getUserFromChat(context.chat, context.senderId)!.permission)
             return await Chat.sendError(ERRORS.NOT_ENOUGH_RIGHTS, context)
 
-        await context.send(`Ping: ${ Math.round( Date.now() / 1000 )  - context.createdAt} Seconds`)
+        const ping = Math.round( Date.now() / 1000 ) - context.createdAt
+
+        await context.send(`Ping: ${ ping < 0 ? 0 : ping } Seconds`)
     };
 
 }

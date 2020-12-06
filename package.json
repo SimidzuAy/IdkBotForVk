@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./build && cls",
+    "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./build",
     "start": "node ./build/index.js",
-    "dev": "npm run build && npm start",
+    "dev": "echo y | rd /S build && npm run build && cls && npm start",
     "test": "jest"
   },
   "keywords": [],
