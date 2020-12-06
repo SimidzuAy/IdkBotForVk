@@ -46,98 +46,108 @@ export interface MContext extends MessageContext {
     chat: ExtractDoc<typeof chatSchema>
     vk: VK
 }
+
+type commandArgs = 'участник' | 'время' | 'префикс' | 'эмоджи' | 'уровень прав' | 'название' | 'команда'
 export const commands: {
     [key in keyof typeof Commands]: {
-        aliases: string[],
-        usages: string[][]
+        aliases: string[]
+        params: {
+            required: commandArgs[]
+            notRequired: commandArgs[]
+        }
     }
 } = {
     ban: {
         aliases: ['бан', 'ban', 'заблокировать'],
-        usages: [[
-            '!ban @user',
-            '!ban vk.com/user',
-            '!ban - с ответом'
-        ], [
-            '!ban @user',
-            '!ban vk.com/user',
-            '!ban - with reply'
-        ]]
+        params: {
+            required: ['участник'],
+            notRequired: []
+        }
 
     },
     unBan: {
         aliases: ['разбан', 'анбан', 'unban', 'разблокировать'],
-        usages: [[
-            '!unban @user',
-            '!unban vk.com/user',
-            '!unban - с ответом'
-        ], [
-            '!unban @user',
-            '!unban vk.com/user',
-            '!unban - with reply'
-        ]]
+        params: {
+            required: ['участник'],
+            notRequired: []
+        }
     },
     prefix: {
         aliases: ['prefix', 'префикс'],
-        usages: [[
-            '!префикс *символ*'
-        ], [
-            '!prefix *symbol*'
-        ]]
+        params: {
+            required: ['префикс'],
+            notRequired: []
+        }
     },
     createRole: {
         aliases: ['создать роль', 'create role'],
-        usages: [[
-            '!создать роль *название* *уровень прав*'
-        ], [
-            '!create role *name* *right level*'
-        ]]
+        params: {
+            required: ['название', 'уровень прав'],
+            notRequired: []
+        }
     },
     changeRoleRight: {
         aliases: ['right', 'permission', 'право'],
-        usages: [[
-            '!право *команда* *уровень прав*'
-        ], [
-            '!right *command* *right level*'
-        ]]
+        params: {
+            required: ['команда', 'уровень прав'],
+            notRequired: []
+        }
     },
     roleEmoji: {
         aliases: ['emoji', 'емоджи', 'эмоджи'],
-        usages: [[
-            '!емоджи *уровень прав* *эмоджи*'
-        ], [
-            '!emoji *right level* *emoji*'
-        ]]
+        params: {
+            required: ['уровень прав', 'эмоджи'],
+            notRequired: []
+        }
     },
     setRole: {
         aliases: ['роль', 'role'],
-        usages: [[
-            '!роль @user *уровень прав*',
-            '!роль *уровень прав* - на ответ',
-        ], [
-            '!role @user *right level*',
-            '!role *right level* - on answer'
-        ]]
+        params: {
+            required: ['участник', 'уровень прав'],
+            notRequired: []
+        }
     },
     myRole: {
         aliases: ['роль', 'моя\\s*роль', 'role', 'my\\s*role'],
-        usages: [['!роль'], ['!role']]
+        params: {
+            required: [],
+            notRequired: []
+        }
     },
     getAdminList: {
         aliases: ['админы', 'администраторы', 'управляющие', 'admins'],
-        usages: [['!админы'], ['!admins']]
+        params: {
+            required: [],
+            notRequired: []
+        }
     },
     ping: {
         aliases: ['ping', 'пинг'],
-        usages: [['!пинг'], ['!ping']]
+        params: {
+            required: [],
+            notRequired: []
+        }
     },
     statInChat: {
         aliases: ['моястата', 'стата', 'stat', 'statistic'],
-        usages: [['!стата', '!statistic']]
+        params: {
+            required: [],
+            notRequired: []
+        }
     },
     allUserStat: {
         aliases: ['общая\\s*стата', 'общая\\s*статистика', 'total\\s*stats'],
-        usages: [['!общая стата', '!total stats']]
+        params: {
+            required: [],
+            notRequired: []
+        }
+    },
+    chatStat: {
+        aliases: ['статистика', 'statistic'],
+        params: {
+            required: [],
+            notRequired: []
+        }
     }
 
 }

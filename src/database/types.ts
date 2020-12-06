@@ -41,5 +41,6 @@ export const Commands = Type.object({
     ping: command,
     myRole: command,
     statInChat: command,
-    allUserStat: command
+    allUserStat: command,
+    chatStat: command
 })

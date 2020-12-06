@@ -30,6 +30,9 @@ export default class implements ICommand {
         if (context.$match[1].length > 1) {
             return await context.send('Длинна префикса не может превышать один символ')
         }
+        
+        if ( context.$match[1] === '?' )
+            return await context.send('Префикс не может быть "?"')
 
         context.chat.prefix = context.$match[1]
         context.chat.markModified('commands')

@@ -74,19 +74,22 @@ vk.updates.on(['message_new'], async (context: MContext, next) => {
     if (!context.senderId || !context.peerId || context.senderId < 0 || !context.chatId) return
 
     context.vk = vk
+    try {
+        const userAndChat = await Promise.all([
+            getUser(context),
+            getChat(context)
+        ])
 
-    const userAndChat = await Promise.all([
-        getUser(context),
-        getChat(context)
-    ])
+        context.user = userAndChat[0]
+        context.chat = userAndChat[1]
 
-    context.user = userAndChat[0]
-    context.chat = userAndChat[1]
+        if (await checkUserIsBanned(context)) return
 
-    if ( await checkUserIsBanned(context) ) return
-
-    await next()
-
+        await next()
+    } catch (e) {
+        // Если юзер слишком быстро пишет, чтобы при попытке создания его 2 был игнор ошибки
+        if ( e.type !== 'MongoError' ) throw e
+    }
 })
 
 vk.updates.on(['message_new'], async (context: MContext, next) => {
