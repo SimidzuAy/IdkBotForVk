@@ -116,7 +116,8 @@ export default class {
                     setRole: {permission: 80},
                     getAdminList: {permission: 0},
                     ping: {permission: 0},
-                    statInChat: {permission: 0}
+                    statInChat: {permission: 0},
+                    allUserStat: {permission: 0}
                 },
                 prefix: '!',
                 bans: [],

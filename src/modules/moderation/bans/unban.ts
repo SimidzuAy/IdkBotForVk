@@ -14,7 +14,7 @@ export default class implements ICommand {
 
             const regExps = [
                 new RegExp(`${genCommand(context.chat.prefix, 'unBan')} ${getUserReg}`, 'i'),
-                new RegExp(genCommand(context.chat.prefix, 'unBan'))
+                new RegExp(genCommand(context.chat.prefix, 'unBan'), 'i')
             ]
             return isThisCommand(value, context, regExps)
         }

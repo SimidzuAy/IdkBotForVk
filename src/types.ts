@@ -134,6 +134,10 @@ export const commands: {
     statInChat: {
         aliases: ['моястата', 'стата', 'stat', 'statistic'],
         usages: [['!стата', '!statistic']]
+    },
+    allUserStat: {
+        aliases: ['общая\\s*стата', 'общая\\s*статистика', 'total\\s*stats'],
+        usages: [['!общая стата', '!total stats']]
     }
 
 }

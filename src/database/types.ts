@@ -40,5 +40,6 @@ export const Commands = Type.object({
     getAdminList: command,
     ping: command,
     myRole: command,
-    statInChat: command
+    statInChat: command,
+    allUserStat: command
 })

@@ -7,9 +7,8 @@ export default class implements ICommand {
     hears = [
         (value: string, context: MContext): boolean => {
             const regExps = [
-                new RegExp(genCommand(context.chat.prefix, 'statInChat'))
+                new RegExp(genCommand(context.chat.prefix, 'statInChat'), 'i')
             ]
-
 
             return isThisCommand(value, context, regExps)
         }
@@ -21,9 +20,9 @@ export default class implements ICommand {
 
         const user = Chat.getUserFromChat(context.chat, context.senderId)!
         
-        if ( context.text!.toLowerCase().includes('детально') )
+        if ( context.text!.match(/детально|подробно/i) )
             return await context.send(`
-                [id${context.senderId}|Ваша] статистика в этом чате:
+                [id${context.senderId}|Ваша] подробная статистика в этом чате:
                 📧 Сообщений: ${prettyNum(user.stat.messages)}
                 🔣 Символов: ${prettyNum(user.stat.symbols)}
                 🎵 Голосовых: ${prettyNum(user.stat.audio_message)}

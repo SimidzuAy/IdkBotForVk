@@ -103,34 +103,44 @@ vk.updates.on(['message_new'], async (context: MContext, next) => {
         const emojiLen: number = match ? match.length : 0
         const text = context.text ? context.text.replace(emojiReg, '').length : 0
 
-        // Немного статистики никому не помешает =)
+        // Мега костыль, зато рабочий.
+        const stat: typeof Stat = {} as typeof Stat
+
+        Object.assign(stat, Chat.getUserFromChat(context.chat, context.senderId)!.stat)
+        stat.messages += 1
+        stat.commands += 1
+        stat.symbols  += text
+        stat.forwards += context.forwards.length
+        stat.emoji    += emojiLen
+
 
         context.user.stat.commands += 1
         context.user.stat.messages += 1
         context.user.stat.symbols  += text
         context.user.stat.forwards += context.forwards.length
         context.user.stat.emoji    += emojiLen
-        
-        Chat.getUserFromChat(context.chat, context.senderId)!.stat.commands += 1
-        Chat.getUserFromChat(context.chat, context.senderId)!.stat.messages += 1
-        Chat.getUserFromChat(context.chat, context.senderId)!.stat.symbols  += text
-        Chat.getUserFromChat(context.chat, context.senderId)!.stat.forwards += context.forwards.length
-        Chat.getUserFromChat(context.chat, context.senderId)!.stat.emoji    += emojiLen
 
-        context.chat.stat.messages += 1
-        context.chat.stat.commands += 1
-        context.chat.stat.symbols  += text
-        context.chat.stat.forwards += context.forwards.length
-        context.chat.stat.emoji    += emojiLen
+        const chatStat: typeof Stat = {} as typeof Stat
+        Object.assign(chatStat, context.chat.stat)
+
+        chatStat.messages += 1
+        chatStat.commands += 1
+        chatStat.symbols  += text
+        chatStat.forwards += context.forwards.length
+        chatStat.emoji    += emojiLen
+
 
         context.attachments.forEach(attach => {
             if ( ['audio_message', 'photo', 'video', 'audio', 'doc', 'sticker', 'wall'].includes(attach.type) ) {
                 context.user.stat[attach.type as keyof typeof Stat] += 1
-                context.chat.stat[attach.type as keyof typeof  Stat] += 1
-                Chat.getUserFromChat(context.chat, context.senderId)!.stat[attach.type as keyof typeof Stat] += 1
+                chatStat[attach.type as keyof typeof Stat] += 1
+                stat[attach.type as keyof typeof Stat] += 1
             }
         })
 
+        const index = context.chat.users.findIndex(user => user.userId === context.senderId)!
+        context.chat.users[index].stat = stat
+        context.chat.stat = chatStat
 
     } catch (error) {
         await context.reply('Произошла ошибка: ' + error.message)
@@ -178,8 +188,20 @@ hearManager.onFallback(async context => {
     if (!context.isChat)
         return await context.reply('Команда не найдена')
 
-    context.chat.stat.commands -= 1
-    Chat.getUserFromChat(context.chat, context.senderId)!.stat.commands -= 1
+    const chatStat: typeof Stat = {} as typeof Stat
+    Object.assign(chatStat, context.chat.stat)
+
+    chatStat.commands -= 1
+    context.chat.stat = chatStat
+
+    const stat: typeof Stat = {} as typeof Stat
+
+    Object.assign(stat, Chat.getUserFromChat(context.chat, context.senderId)!.stat)
+    stat.commands -= 1
+
+    const index = context.chat.users.findIndex(user => user.userId === context.senderId)!
+    context.chat.users[index].stat = stat
+
 })
 
 
