@@ -11,6 +11,7 @@ import Logger from '@class/Logger'
 import {checkUserIsBanned} from '@utils'
 import {Stat} from './database/types'
 
+const start = Date.now()
 
 const vk: VK = new VK({
     token: cfg.token,
@@ -243,4 +244,4 @@ setInterval(() => {
     })
 }, 5000)
 
-vk.updates.start().catch(console.error).then(() => logger.info('Бот запущен'))
+vk.updates.start().catch(console.error).then(() => logger.info(`Бот запущен за ${Date.now() - start} ms`))
