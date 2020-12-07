@@ -1,6 +1,7 @@
 import ICommand from '@command'
 import {commands, MContext} from '@types'
 import {isThisCommand} from '@utils'
+import Chat from '@class/Chat'
 
 let str = ''
 
@@ -24,7 +25,7 @@ export default class implements ICommand {
         let commandKey: keyof typeof commands | null = null
 
         for (const key of Object.keys(commands)) {
-            if (commands[key as keyof typeof commands].aliases.find(x => x === context.$match[1])) {
+            if (commands[key as keyof typeof commands].aliases.find(x => new RegExp(x).test(context.$match[1]))) {
                 commandKey = key as keyof typeof commands
                 break
             }
@@ -45,11 +46,15 @@ export default class implements ICommand {
             notRequired += `{${param}} `
         })
 
+        const cmd = Chat.getCommand(context.chat, commandKey)
+        const role = Chat.getRoleByPermission(context.chat, cmd.permission)!
+
         return await context.send(`
             📖 Синонимы команды: ${thisCommand.aliases.join(', ')}
             🤔 Использование команды: ${context.chat.settings.prefix.symbol}${context.$match[1]} ${required}${notRequired}
+            ⚡ Необходимая роль: ${role.name} (${role.permission})
             
-            ❓ ${thisCommand?.description}
+            ❓ ${thisCommand.description}
         `.replace(/ {12}/g, ''))
 
     }

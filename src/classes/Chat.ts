@@ -146,6 +146,12 @@ export default class {
         return chat.commands[command].permission <= this.getUserFromChat(chat, user.vkId)!.permission
     }
 
+    static getCommand(chat: ExtractDoc<typeof chatSchema>, command: commandsName): {
+        permission: number
+    }  {
+        return chat.commands[command]
+    }
+
 
     static newChatUser(chat: ExtractDoc<typeof chatSchema>, userId: number): void {
 

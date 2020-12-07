@@ -50,7 +50,7 @@ export const commands: {
             required: commandArgs[]
             notRequired: commandArgs[]
         }
-        description?: string
+        description: string
     }
 } = {
     ban: {
@@ -74,77 +74,88 @@ export const commands: {
         params: {
             required: [],
             notRequired: ['префикс']
-        }
+        },
+        description: 'Переключает необходимость писать «!» перед командами. '
     },
     createRole: {
         aliases: ['создат\\s*роль', 'create\\s*role'],
         params: {
             required: ['название', 'уровень прав'],
             notRequired: []
-        }
+        },
+        description: 'Создает дополнительную роль с указанным вами приоритетом.'
     },
     changeRoleRight: {
         aliases: ['right', 'permission', 'право'],
         params: {
             required: ['команда', 'уровень прав'],
             notRequired: []
-        }
+        },
+        description: 'Изменяет необходимую роль для использования указанной команды.'
     },
     roleEmoji: {
         aliases: ['emoji', 'емоджи', 'эмоджи'],
         params: {
             required: ['уровень прав', 'эмоджи'],
             notRequired: []
-        }
+        },
+        description: 'Изменяет эмоджи перед указанной ролью'
     },
     setRole: {
         aliases: ['роль', 'role'],
         params: {
             required: ['участник', 'уровень прав'],
             notRequired: []
-        }
+        },
+        description: 'Показывает текущую роль или изменяет роль указанного вами пользователя'
     },
     myRole: {
         aliases: ['роль', 'моя\\s*роль', 'role', 'my\\s*role'],
         params: {
             required: [],
             notRequired: []
-        }
+        },
+        description: 'Показывает вашу текущую роль в чате.'
     },
     getAdminList: {
         aliases: ['админы', 'администраторы', 'управляющие', 'admins'],
         params: {
             required: [],
             notRequired: []
-        }
+        },
+        description: 'Показывает текущий список пользователей с правами в чате'
     },
     ping: {
         aliases: ['ping', 'пинг'],
         params: {
             required: [],
             notRequired: []
-        }
+        },
+        description: 'Показывает время ответа VK API'
     },
     statInChat: {
         aliases: ['моястата', 'стата', 'stat', 'statistic'],
         params: {
             required: [],
             notRequired: []
-        }
+        },
+        description: 'Показывает вашу текущую статистику'
     },
     allUserStat: {
         aliases: ['общая\\s*стата', 'общая\\s*статистика', 'total\\s*stats'],
         params: {
             required: [],
             notRequired: []
-        }
+        },
+        description: 'Показывает вашу общую статистику во всех чатах с ботом'
     },
     chatStat: {
         aliases: ['статистика', 'statistic'],
         params: {
             required: [],
             notRequired: []
-        }
+        },
+        description: 'Показывает текущую статистику чата'
     }
 
 }
