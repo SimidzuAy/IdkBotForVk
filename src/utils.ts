@@ -1,5 +1,5 @@
 import {MessageContext, VK} from 'vk-io'
-import {MContext, commands, commandsName} from './types'
+import {commands, commandsName, MContext} from './types'
 
 type NameCases = 'nom' | 'gen' | 'dat' | 'acc' | 'ins' | 'abl' | undefined;
 
@@ -92,8 +92,11 @@ export async function checkUserIsBanned(context: MContext): Promise<boolean> {
     return false
 }
 
-export function genCommand(prefix: string, command: commandsName): string {
-    return `^${prefix}\\s*${aliasesToCommand(commands[command].aliases)}`
+export function genCommand({symbol, isRequired}: {
+    symbol: string
+    isRequired: boolean
+}, command: commandsName): string {
+    return `^(?:${symbol}${isRequired ? '' : '|'})\\s*${aliasesToCommand(commands[command].aliases)}`
 }
 
 

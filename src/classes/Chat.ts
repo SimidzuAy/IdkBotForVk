@@ -12,6 +12,12 @@ interface IUserInChat {
     stat:       IStat
 }
 
+interface IRightInChat {
+    permission: number
+    emoji?:     string
+    name:       string
+}
+
 
 const stat = {
     symbols:       0,
@@ -104,6 +110,12 @@ export default class {
                     permission: 0,
                     emoji: ''
                 }],
+                settings: {
+                    prefix: {
+                        symbol: '!',
+                        isRequired: true
+                    }
+                },
                 commands: {
                     ban: { permission: 60 },
                     unBan: { permission: 60 },
@@ -119,7 +131,6 @@ export default class {
                     allUserStat: {permission: 0},
                     chatStat: {permission: 40}
                 },
-                prefix: '!',
                 bans: [],
                 stat
             })
@@ -172,6 +183,10 @@ export default class {
             random_id: 0,
             peer_id: peerId
         })
+    }
+
+    static getRoleByPermission(chat: ExtractDoc<typeof chatSchema>, permission: number): undefined | IRightInChat {
+        return chat.rights.find(x => x.permission === permission)
     }
 
 }

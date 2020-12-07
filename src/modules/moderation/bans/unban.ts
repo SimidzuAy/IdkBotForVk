@@ -1,11 +1,6 @@
 import ICommand from '@command'
-import {ERRORS, MContext, getUserReg, hear} from '@types'
-import {
-    getIdByMatch,
-    getIdFromReply,
-    isThisCommand,
-    genCommand
-} from '@utils'
+import {ERRORS, getUserReg, hear, MContext} from '@types'
+import {genCommand, getIdByMatch, getIdFromReply, isThisCommand} from '@utils'
 import Chat from '@class/Chat'
 
 export default class implements ICommand {
@@ -13,8 +8,8 @@ export default class implements ICommand {
         (value: string, context: MContext): boolean => {
 
             const regExps = [
-                new RegExp(`${genCommand(context.chat.prefix, 'unBan')} ${getUserReg}`, 'i'),
-                new RegExp(genCommand(context.chat.prefix, 'unBan'), 'i')
+                new RegExp(`${genCommand(context.chat.settings.prefix, 'unBan')} ${getUserReg}`, 'i'),
+                new RegExp(genCommand(context.chat.settings.prefix, 'unBan'), 'i')
             ]
             return isThisCommand(value, context, regExps)
         }

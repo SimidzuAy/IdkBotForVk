@@ -50,6 +50,7 @@ export const commands: {
             required: commandArgs[]
             notRequired: commandArgs[]
         }
+        description?: string
     }
 } = {
     ban: {
@@ -57,25 +58,26 @@ export const commands: {
         params: {
             required: ['участник'],
             notRequired: []
-        }
-
+        },
+        description: 'Запрещает приглашать указанного в аргументе участника'
     },
     unBan: {
         aliases: ['разбан', 'анбан', 'unban', 'разблокировать'],
         params: {
             required: ['участник'],
             notRequired: []
-        }
+        },
+        description: 'Снимает блокировку в чате и разрешает вернуть заблокированного пользователя'
     },
     prefix: {
         aliases: ['prefix', 'префикс'],
         params: {
-            required: ['префикс'],
-            notRequired: []
+            required: [],
+            notRequired: ['префикс']
         }
     },
     createRole: {
-        aliases: ['создать роль', 'create role'],
+        aliases: ['создат\\s*роль', 'create\\s*role'],
         params: {
             required: ['название', 'уровень прав'],
             notRequired: []

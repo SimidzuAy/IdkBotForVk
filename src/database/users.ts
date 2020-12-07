@@ -2,6 +2,11 @@ import {createSchema, Type, typedModel} from 'ts-mongoose'
 import {RIGHTS} from '@types'
 import {Stat} from './types'
 
+const nameCase = Type.object({ required: true }).of({
+    first: Type.string({ required: true }),
+    last: Type.string({ required: true })
+})
+
 export const userSchema = createSchema({
     vkId: Type.number({
         required: true,
@@ -12,7 +17,14 @@ export const userSchema = createSchema({
         enum: [0, 1, 2],
         required: false
     })),
-    fullName: Type.string({required: true}),
+    name: {
+        nom: nameCase,
+        gen: nameCase,
+        dat: nameCase,
+        acc: nameCase,
+        ins: nameCase,
+        abl: nameCase
+    },
     sex: Type.number({ required: true }),
     stat: Stat
 })

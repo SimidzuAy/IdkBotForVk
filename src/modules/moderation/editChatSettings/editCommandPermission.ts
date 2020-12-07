@@ -8,7 +8,7 @@ export default class implements ICommand {
     readonly hears: hear[] = [
         (value: string, context: MContext): boolean => {
             const regExps = [
-                new RegExp(`${genCommand(context.chat.prefix, 'changeRoleRight')} ([а-яА-Яa-zA-Z]+) (\\d{1,3})`, 'i')
+                new RegExp(`${genCommand(context.chat.settings.prefix, 'changeRoleRight')} ([а-яА-Яa-zA-Z]+) (\\d{1,3})`, 'i')
             ]
 
             return isThisCommand(value, context, regExps)

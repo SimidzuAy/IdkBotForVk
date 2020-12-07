@@ -1,7 +1,8 @@
 import ICommand from '@command'
-import {ERRORS, MContext, getUserReg, hear} from '@types'
+import {ERRORS, getUserReg, hear, MContext} from '@types'
 import {genCommand, getIdByMatch, getIdFromReply, isThisCommand} from '@utils'
 import Chat from '@class/Chat'
+import User from '@class/User'
 
 export default class implements ICommand {
 
@@ -9,9 +10,9 @@ export default class implements ICommand {
         (value: string, context: MContext): boolean => {
 
             const regExps = [
-                new RegExp(`${genCommand(context.chat.prefix, 'setRole')} ${getUserReg} (\\d{1,3})$`, 'i'),
-                new RegExp(`${genCommand(context.chat.prefix, 'setRole')} (\\d{1,3})$`, 'i'),
-                new RegExp(genCommand(context.chat.prefix, 'myRole'), 'i')
+                new RegExp(`${genCommand(context.chat.settings.prefix, 'setRole')} ${getUserReg} (\\d{1,3})$`, 'i'),
+                new RegExp(`${genCommand(context.chat.settings.prefix, 'setRole')} (\\d{1,3})$`, 'i'),
+                new RegExp(genCommand(context.chat.settings.prefix, 'myRole'), 'i')
             ]
 
             return isThisCommand(value, context, regExps)
@@ -55,7 +56,13 @@ export default class implements ICommand {
 
         Chat.getUserFromChat(context.chat, id)!.permission = permission
 
-        await context.send('Уровень прав успешно изменён!')
+        const user = await new User(id).getUser(id, context.vk)
+
+        await context.send(`Теперь у [id${id}|${user.name.gen.first} ${user.name.gen.last}] роль [${
+            Chat.getRoleByPermission(context.chat, permission)!.name}]`, {
+            disable_mentions: 1
+        })
+
 
     };
 }

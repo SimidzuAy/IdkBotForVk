@@ -8,10 +8,9 @@ for ( const key in commands ) {
     str += commands[key as keyof typeof commands].aliases.join('|') + '|'
 }
 str = str.substring(0, str.length - 1)
-console.log(str)
 
 const regExp = [
-    new RegExp(`^?\\s*(${str})`)
+    new RegExp(`^\\?\\s*(${str})`)
 ]
 
 export default class implements ICommand {
@@ -22,20 +21,36 @@ export default class implements ICommand {
     ]
 
     handler = async ( context: MContext ): Promise<unknown> => {
-        let command: keyof typeof commands | null = null
+        let commandKey: keyof typeof commands | null = null
 
         for (const key of Object.keys(commands)) {
             if (commands[key as keyof typeof commands].aliases.find(x => x === context.$match[1])) {
-                command = key as keyof typeof commands
+                commandKey = key as keyof typeof commands
                 break
             }
         }
 
-        if ( !command ) return
+        if ( !commandKey ) return
+
+        const thisCommand = commands[commandKey]
+
+        let required = ''
+        let notRequired = ''
+
+        thisCommand.params.required.forEach(param => {
+            required += `[${param}] `
+        })
+
+        thisCommand.params.notRequired.forEach(param => {
+            notRequired += `{${param}} `
+        })
 
         return await context.send(`
-            📖 ${commands[command].usage}
-        `)
+            📖 Синонимы команды: ${thisCommand.aliases.join(', ')}
+            🤔 Использование команды: ${context.chat.settings.prefix.symbol}${context.$match[1]} ${required}${notRequired}
+            
+            ❓ ${thisCommand?.description}
+        `.replace(/ {12}/g, ''))
 
     }
 }

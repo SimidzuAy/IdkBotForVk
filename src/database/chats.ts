@@ -10,10 +10,13 @@ export const chatSchema = createSchema({
         bannedId: Type.number({required: true}),
         byId: Type.number({required: true}),
         from: Type.number({required: true}),
-        to: Type.number({required: false, default: -1})
+        to: Type.number({required: true, default: -1})
     }),
-    prefix: Type.string({
-        required: true
+    settings: Type.object({ required: true }).of({
+        prefix: Type.object({ required: true }).of({
+            symbol: Type.string({ required: true }),
+            isRequired: Type.boolean({ required: true })
+        })
     }),
     users: Type.array({ required: true }).of({
         userId: Type.number({required: true}),

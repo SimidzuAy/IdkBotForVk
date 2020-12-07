@@ -1,10 +1,5 @@
-import {ERRORS, MContext, getUserReg, hear} from '@types'
-import {
-    getIdByMatch,
-    getIdFromReply,
-    isThisCommand,
-    genCommand
-} from '@utils'
+import {ERRORS, getUserReg, hear, MContext} from '@types'
+import {genCommand, getIdByMatch, getIdFromReply, isThisCommand} from '@utils'
 import ICommand from '@command'
 import Chat from '@class/Chat'
 
@@ -13,8 +8,8 @@ export default class implements ICommand {
     readonly hears: hear[] =  [
         (value: string, context: MContext): boolean => {
             const regExps = [
-                new RegExp(`${genCommand(context.chat.prefix, 'ban')} ${getUserReg}`, 'i'),
-                new RegExp(`${genCommand(context.chat.prefix, 'ban')}`, 'i')
+                new RegExp(`${genCommand(context.chat.settings.prefix, 'ban')} ${getUserReg}`, 'i'),
+                new RegExp(`${genCommand(context.chat.settings.prefix, 'ban')}`, 'i')
             ]
 
             return isThisCommand(value, context, regExps)

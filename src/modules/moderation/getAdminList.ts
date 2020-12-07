@@ -8,7 +8,7 @@ export default class implements ICommand {
     readonly hears: hear[] = [
         (value: string, context: MContext): boolean => {
             const regExps = [
-                new RegExp(genCommand(context.chat.prefix, 'getAdminList'), 'i')
+                new RegExp(genCommand(context.chat.settings.prefix, 'getAdminList'), 'i')
             ]
 
             return isThisCommand(value, context, regExps)
@@ -46,7 +46,8 @@ export default class implements ICommand {
                 if (right.permission === Chat.getUserFromChat(context.chat, admin.userId)!.permission) {
                     const user = await new User(admin.userId).getUser(admin.userId, context.vk)
 
-                    msg += `\n[id${admin.userId}|${user.fullName}] ${Chat.getUserFromChat(context.chat, admin.userId)!.inChat ? '' : '🚪'}`
+                    msg += `\n[id${admin.userId}|${user.name.nom.first} ${user.name.nom.last}] ${
+                        Chat.getUserFromChat(context.chat, admin.userId)!.inChat ? '' : '🚪'}`
                 }
             }
         }

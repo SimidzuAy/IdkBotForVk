@@ -7,7 +7,7 @@ export default class implements ICommand {
     hears = [
         (value: string, context: MContext): boolean => {
             const regExps = [
-                new RegExp(genCommand(context.chat.prefix, 'statInChat'), 'i')
+                new RegExp(genCommand(context.chat.settings.prefix, 'statInChat'), 'i')
             ]
 
             return isThisCommand(value, context, regExps)

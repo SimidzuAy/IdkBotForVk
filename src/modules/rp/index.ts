@@ -1,5 +1,5 @@
 import ICommand from '@command'
-import {ERRORS, MContext, getUserReg, hear} from '@types'
+import {ERRORS, getUserReg, hear, MContext} from '@types'
 import cfg from '@config'
 import {Keyboard} from 'vk-io'
 import {getFullNameById, getIdByMatch, getIdFromReply, isThisCommand} from '@utils'
@@ -9,8 +9,8 @@ export default class implements ICommand {
     readonly hears: hear[] = [
         (value: string, context: MContext): boolean => {
             const regExps = [
-                new RegExp(`^${context.chat.prefix}\\s*(.+)\\s+${getUserReg}`, 'i'),
-                new RegExp(`^${context.chat.prefix}\\s*(.+)`, 'i')
+                new RegExp(`^${context.chat.settings.prefix}\\s*(.+)\\s+${getUserReg}`, 'i'),
+                new RegExp(`^${context.chat.settings.prefix}\\s*(.+)`, 'i')
             ]
 
             return isThisCommand(value, context, regExps)
@@ -73,7 +73,7 @@ export default class implements ICommand {
                 return await Chat.sendError(ERRORS.USER_NOT_FOUND, context)
 
             const names = [
-                `[id${context.senderId}|${context.user.fullName}]`,
+                `[id${context.senderId}|${context.user.name.nom.first} ${context.user.name.nom.last}]`,
                 `[id${id}|${await getFullNameById(context.vk, id, 'gen')}]`]
 
             const string = context.$match[1][0].toUpperCase() + context.$match[1].substr(1).toLowerCase()

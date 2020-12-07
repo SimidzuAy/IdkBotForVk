@@ -11,7 +11,7 @@ interface IConfig {
         url: string
     },
     errors: {
-        [key: string]: string[]
+        [key: string]: string
     }
 }
 

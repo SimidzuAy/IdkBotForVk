@@ -18,6 +18,30 @@ const stat = {
     messages:      0
 }
 
+interface IName {
+    first: string
+    last: string
+}
+
+interface INameCases {
+    nom: IName
+    gen: IName
+    dat: IName
+    acc: IName
+    ins: IName
+    abl: IName
+}
+
+
+const nameCases = [
+    'first_name_nom', 'last_name_nom',
+    'first_name_gen', 'last_name_gen',
+    'first_name_dat', 'last_name_dat',
+    'first_name_acc', 'last_name_acc',
+    'first_name_ins', 'last_name_ins',
+    'first_name_abl', 'last_name_abl'
+]
+
 export default class User {
     private readonly vkId: number;
     private user!: ExtractDoc<typeof userSchema>;
@@ -29,21 +53,34 @@ export default class User {
 
     async getUser(id?: number, vk?: VK): Promise<ExtractDoc<typeof userSchema>> {
 
-        if (id && vk) {
+        if (!id)
+            id = this.vkId
+
+        if (vk) {
             const user = (await userModel.getByVkId(id))[0]
 
             if (user)
                 return user
             else {
+                // Нерезгор не добавил типы, а получить все кейсы одним запросом хчца
                 const _user = (await vk.api.users.get({
                     user_ids: String(id),
-                    fields: ['sex']
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    fields: ['sex', ...nameCases]
                 }))[0]
+                const cases: (keyof INameCases)[] = ['nom', 'gen', 'dat', 'acc', 'ins', 'abl']
+                const name: INameCases = {} as INameCases
 
-                const fullName = `${_user.first_name} ${_user.last_name}`
+
+                cases.forEach(nameCase => {
+                    name[nameCase] = {} as IName
+                    name[nameCase].first = _user[`first_name_${nameCase}`]
+                    name[nameCase].last = _user[`last_name_${nameCase}`]
+                })
 
                 return await userModel.create({
-                    fullName: fullName,
+                    name,
                     vkId: id,
                     sex: _user.sex,
                     right: [RIGHTS.USER],
@@ -52,31 +89,6 @@ export default class User {
             }
         }
 
-        else if ( vk ) {
-            const user = (await userModel.getByVkId(this.vkId))[0]
-
-            if (user) {
-                return user
-            } else {
-
-                const _user = (await vk.api.users.get({
-                    user_ids: String(this.vkId),
-                    fields: ['sex']
-                }))[0]
-
-                const fullName = `${_user.first_name} ${_user.last_name}`
-
-                return await userModel.create({
-                    fullName: fullName,
-                    sex: _user.sex,
-                    vkId: this.vkId,
-                    right: [RIGHTS.USER],
-                    stat
-                })
-
-            }
-
-        }
         return this.user
 
     }
