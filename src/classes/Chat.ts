@@ -1,7 +1,7 @@
 import {chatModel, chatSchema, userSchema} from '../database'
 import {ExtractDoc} from 'ts-mongoose'
 import {MessagesConversationMember} from 'vk-io/lib/api/schemas/objects'
-import {commands, commandsName, ERRORS, IStat, LANG} from '@types'
+import {commandsName, ERRORS, IStat} from '@types'
 import {VK} from 'vk-io'
 import cfg from '@config'
 
@@ -79,7 +79,6 @@ export default class {
             this.chat = await chatModel.create({
                 peerId: this.peerId,
                 users,
-                lang: LANG.RUSSIAN,
                 rights: [{
                     name: 'Создатель беседы',
                     permission: 100,
@@ -164,41 +163,15 @@ export default class {
         return chat.users.find(x => x.userId === id)
     }
 
-    static async sendError(errorCode: ERRORS, { peerId, chat, vk }: {
-        peerId: number,
-        chat: ExtractDoc<typeof chatSchema>,
+    static async sendError(errorCode: ERRORS, { peerId, vk }: {
+        peerId: number
         vk: VK
     }): Promise<void> {
         await vk.api.messages.send({
-            message: `${cfg.errors[ERRORS[errorCode]][chat.lang]}\n${['Код ошибки: ', 'Error code: '][chat.lang]} ${errorCode} (${ERRORS[errorCode]})`,
+            message: `${cfg.errors[ERRORS[errorCode]]}\nКод ошибки: ${errorCode} (${ERRORS[errorCode]})`,
             random_id: 0,
             peer_id: peerId
         })
-    }
-
-    static async sendCommandUsage(command: commandsName, { peerId, chat, vk}: {
-        peerId: number,
-        chat: ExtractDoc<typeof chatSchema>,
-        vk: VK
-    }): Promise<void> {
-
-        let usages = ''
-
-        if ( commands[command].usages ) {
-            commands[command].usages[chat.lang].forEach(usage => {
-                usages += `${usage}\n`
-            })
-        }
-
-        await vk.api.messages.send({
-            random_id: 0,
-            peer_id: peerId,
-            message: [
-                `Использование комманды ${command}:\n${usages}`,
-                `Usage of the command: ${command}:\n${usages}`
-            ][chat.lang]
-        })
-
     }
 
 }

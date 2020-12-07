@@ -11,14 +11,7 @@ export default class implements ICommand {
                 new RegExp(`${genCommand(context.chat.prefix, 'createRole')}\\s+(.+)\\s+(\\d{1,3})$`, 'i')
             ]
 
-            const ans = isThisCommand(value, context, regExps)
-
-            if ( !ans ) {
-                if (new RegExp(genCommand(context.chat.prefix, 'createRole')).test(value)) {
-                    Chat.sendCommandUsage('createRole', context).then()
-                }
-            }
-            return ans
+            return  isThisCommand(value, context, regExps)
         }
     ];
 

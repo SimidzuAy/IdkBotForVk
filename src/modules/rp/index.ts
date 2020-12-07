@@ -59,10 +59,7 @@ export default class implements ICommand {
         if (id) {
 
             if (id < 0)
-                return await context.send([
-                    'Я не хочу трогать своих братьев!',
-                    'I dont wanna touch my brothers!'
-                ][context.chat.lang])
+                return await context.send('Я не хочу трогать своих братьев!')
 
             if (id === context.senderId) {
                 return await context.send(`Ну и нахуя ты самовыпил ${['сделало', 'сделала', 'сделал'][context.user.sex]}`)

@@ -37,8 +37,6 @@ export default class implements ICommand {
                 await context.send(`Пользователь @id${id} успешно разбанен!`)
             } else
                 return await Chat.sendError(ERRORS.USER_ARE_NOT_BANNED, context)
-        } else {
-            return await Chat.sendCommandUsage('unBan', context)
         }
 
     };

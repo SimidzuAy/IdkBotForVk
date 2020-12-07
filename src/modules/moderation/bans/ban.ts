@@ -47,8 +47,6 @@ export default class implements ICommand {
                 })
 
                 Chat.removeUserFromChat(context.chat, id)
-            } else {
-                await Chat.sendCommandUsage('ban', context)
             }
 
         } catch (err) {

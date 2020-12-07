@@ -11,14 +11,7 @@ export default class implements ICommand {
                 new RegExp(`${genCommand(context.chat.prefix, 'roleEmoji')} (\\d{1,3}) (.+)`, 'i')
             ]
 
-            const ans = isThisCommand(value, context, regExps)
-
-            if ( !ans ) {
-                if (new RegExp(genCommand(context.chat.prefix, 'roleEmoji')).test(value)) {
-                    Chat.sendCommandUsage('roleEmoji', context).then()
-                }
-            }
-            return ans
+            return isThisCommand(value, context, regExps)
         }
     ];
 
@@ -38,10 +31,7 @@ export default class implements ICommand {
 
         context.chat.rights.find(x => x.permission === Number(context.$match[1]))!.emoji = emoji
 
-        await context.send([
-            `Emoji роли с названием ${right.name} успешно измененно!`,
-            `Emoji role with name ${right.name} has been changed`
-        ][context.chat.lang])
+        await context.send(`Emoji роли с названием ${right.name} успешно измененно!`)
 
     };
 }

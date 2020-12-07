@@ -48,17 +48,14 @@ export default class implements ICommand {
             return await Chat.sendError(ERRORS.USER_HAVE_BIGGER_RIGHT, context)
 
         if (thisUser.permission <= permission)
-            return await context.send([
-                'Вы не можете выдавать права которые выше или равняются вашему!',
-                'You cannot issue rights that are higher than or equal to yours!'
-            ][context.chat.lang])
+            return await context.send('Вы не можете выдавать права которые выше или равняются вашему!')
 
         if (!context.chat.rights.find(x => x.permission === permission))
             return await Chat.sendError(ERRORS.ROLE_DOESNT_CREATED, context)
 
         Chat.getUserFromChat(context.chat, id)!.permission = permission
 
-        await context.send(['Уровень прав успешно изменён!', 'Permission level successfully changed!'][context.chat.lang])
+        await context.send('Уровень прав успешно изменён!')
 
     };
 }

@@ -1,5 +1,4 @@
 import {createSchema, Type, typedModel} from 'ts-mongoose'
-import {LANG} from '@types'
 import {Commands, Stat} from './types'
 
 export const chatSchema = createSchema({
@@ -15,10 +14,6 @@ export const chatSchema = createSchema({
     }),
     prefix: Type.string({
         required: true
-    }),
-    lang: Type.number({
-        required: true,
-        default: LANG.RUSSIAN
     }),
     users: Type.array({ required: true }).of({
         userId: Type.number({required: true}),

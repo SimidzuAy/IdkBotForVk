@@ -33,11 +33,6 @@ export enum RIGHTS {
     DEVELOPER
 }
 
-export enum LANG {
-    RUSSIAN,
-    ENGLISH
-}
-
 export type hear = (value: string, context: MContext) => boolean
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
